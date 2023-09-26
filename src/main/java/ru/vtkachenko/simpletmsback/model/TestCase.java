@@ -3,41 +3,36 @@ package ru.vtkachenko.simpletmsback.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "test_cases")
-public class TestCase {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(nullable = false)
-    @CreationTimestamp
-    private Instant createdDt;
-    @Column(nullable = false)
-    @UpdateTimestamp
-    private Instant modifiedDt;
-
+public class TestCase extends AbstractEntity {
     @NotNull
     private String name;
     private String preconditions;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Project project;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private TestSuite parentSuite;
     @OneToMany(mappedBy = "testCase", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<StepCase> testSteps = new HashSet<>();
+    @ToString.Exclude
+    @Builder.Default
+    private List<StepCaseRel> testSteps = new ArrayList<>();
+
 
     @Override
     public boolean equals(Object o) {

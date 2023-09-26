@@ -1,45 +1,39 @@
 package ru.vtkachenko.simpletmsback.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "test_steps")
-public class TestStep {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(nullable = false)
-    @CreationTimestamp
-    private Instant createdDt;
-    @Column(nullable = false)
-    @UpdateTimestamp
-    private Instant modifiedDt;
-
+public class TestStep extends AbstractEntity {
     private String name;
+    @NotNull
     private Boolean repeatable;
+    @NotNull
     private String action;
     private String expected;
     // TODO добавить поле с файлами (Set сущностей файла - id, link-ссылка на файл для скачивания/мб открытия онлайн, name)
     // TODO private Integer orderNumber; - нужна промежуточная сущность для указания индекса степа в тест кейсе
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private TestSuite parentSuite;
+    @ToString.Exclude
+    private Project project;
     @OneToMany(mappedBy = "testStep", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<StepCase> testCases = new HashSet<>();
+    @ToString.Exclude
+    @Builder.Default
+    private List<StepCaseRel> testCases = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

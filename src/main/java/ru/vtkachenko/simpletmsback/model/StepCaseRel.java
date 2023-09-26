@@ -1,11 +1,10 @@
 package ru.vtkachenko.simpletmsback.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
+import java.io.Serializable;
 import java.util.Objects;
 
 @NoArgsConstructor
@@ -14,8 +13,8 @@ import java.util.Objects;
 @Setter
 @Builder
 @Entity
-@Table(name = "steps_cases")
-public class StepCase {
+@Table(name = "steps_cases_rel")
+public class StepCaseRel implements Serializable {
     @EmbeddedId
     private StepCaseId id;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,13 +24,7 @@ public class StepCase {
     @MapsId("testCaseId")
     private TestCase testCase;
 
-    @Column(nullable = false)
-    @CreationTimestamp
-    private Instant createdDt;
-    @Column(nullable = false)
-    @UpdateTimestamp
-    private Instant modifiedDt;
-
+    @NotNull
     private Integer orderNumber;
 
     @Override
@@ -41,7 +34,7 @@ public class StepCase {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        StepCase that = (StepCase) o;
+        StepCaseRel that = (StepCaseRel) o;
         return Objects.equals(testStep, that.testStep) &&
                 Objects.equals(testCase, that.testCase);
     }

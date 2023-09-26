@@ -3,12 +3,9 @@ package ru.vtkachenko.simpletmsback.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.io.Serializable;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,33 +14,26 @@ import java.util.Objects;
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @ToString
 @Entity
 @Table(name = "test_suites")
-public class TestSuite  implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(nullable = false)
-    @CreationTimestamp
-    private Instant createdDt;
-    @Column(nullable = false)
-    @UpdateTimestamp
-    private Instant modifiedDt;
-    // TODO: возможно стоит добавить @CreatedBy @LastModifiedBy
-    // TODO: вынести в базовую хранимую сущность id, createDt, modifiedDt
+public class TestSuite extends AbstractEntity {
 
     @NotNull
     private String name;
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_suite_id")
+    @ToString.Exclude
+    private Project project;
+    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "parent_suite_id")
     @ToString.Exclude
     private TestSuite parentSuite;
     @OneToMany(mappedBy = "parentSuite", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
+    @Builder.Default
     private List<TestCase> testCases = new ArrayList<>();
 
     public void addTestCase(TestCase testCase) {
