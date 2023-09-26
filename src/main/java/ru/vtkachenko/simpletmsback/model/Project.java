@@ -17,7 +17,7 @@ import java.util.Objects;
 @SuperBuilder
 @ToString
 @Entity
-@Table(name = "projects", uniqueConstraints = {@UniqueConstraint(name = "name_unique_idx", columnNames = "name"), @UniqueConstraint(name = "descr_unique_idx", columnNames = "description")})
+@Table(name = "projects", uniqueConstraints = {@UniqueConstraint(name = "name_unique_idx", columnNames = "name")})
 public class Project extends AbstractEntity {
 
 

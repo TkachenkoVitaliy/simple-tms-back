@@ -1,9 +1,7 @@
 package ru.vtkachenko.simpletmsback.service;
 
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.vtkachenko.simpletmsback.dto.ProjectDto;
 import ru.vtkachenko.simpletmsback.mapper.ProjectMapper;
@@ -29,16 +27,9 @@ public class ProjectService {
     }
 
     public ProjectDto createProject(ProjectDto projectDto) {
-//        try {
-            Project project = ProjectMapper.toEntity(projectDto);
-            project = saveProject(project);
-            return ProjectMapper.toDto(project);
-//        } catch (DataIntegrityViolationException e) {
-//            if (e.getCause() instanceof ConstraintViolationException) {
-//                log.error("ERROR {}", ((ConstraintViolationException) e.getCause()).getConstraintViolations());
-//            }
-//            throw new RuntimeException("SSS");
-//        }
+        Project project = ProjectMapper.toEntity(projectDto);
+        project = saveProject(project);
+        return ProjectMapper.toDto(project);
     }
 
     private Project saveProject(Project project) {
