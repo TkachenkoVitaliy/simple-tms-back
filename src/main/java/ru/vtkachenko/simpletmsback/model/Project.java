@@ -17,12 +17,11 @@ import java.util.Objects;
 @SuperBuilder
 @ToString
 @Entity
-@Table(name = "projects")
+@Table(name = "projects", uniqueConstraints = {@UniqueConstraint(name = "name_unique_idx", columnNames = "name"), @UniqueConstraint(name = "descr_unique_idx", columnNames = "description")})
 public class Project extends AbstractEntity {
 
 
     @NotNull
-    @Column(unique = true)
     private String name;
     private String description;
 

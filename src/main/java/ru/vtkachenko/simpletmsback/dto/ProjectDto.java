@@ -7,7 +7,6 @@ import lombok.Data;
 @Data
 @Builder
 public final class ProjectDto {
-    @NotNull
     private Long id;
     @NotNull
     @Builder.Default

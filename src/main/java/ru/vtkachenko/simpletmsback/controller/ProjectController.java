@@ -1,10 +1,9 @@
 package ru.vtkachenko.simpletmsback.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.vtkachenko.simpletmsback.dto.ProjectDto;
 import ru.vtkachenko.simpletmsback.service.ProjectService;
 
@@ -22,8 +21,14 @@ public class ProjectController {
     }
 
     @GetMapping
-    public List<ProjectDto> getAllProject() {
-        log.debug("Request [/api/v1/projects] method [GET]");
+    public List<ProjectDto> getAllProjects() {
+        log.info("Request [/api/v1/projects] method [GET] - getAllProjects.");
         return projectService.getAllProjects();
+    }
+
+    @PostMapping
+    public ProjectDto createProject(@Valid @RequestBody ProjectDto projectDto) {
+        log.info("Request [/api/v1/projects] method [POST] - createProject. Request body - [{}]", projectDto);
+        return projectService.createProject(projectDto);
     }
 }
