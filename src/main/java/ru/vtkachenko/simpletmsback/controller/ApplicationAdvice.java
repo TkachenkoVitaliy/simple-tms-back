@@ -3,10 +3,12 @@ package ru.vtkachenko.simpletmsback.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.vtkachenko.simpletmsback.dto.ErrorInfo;
+import ru.vtkachenko.simpletmsback.exception.business.BusinessException;
 import ru.vtkachenko.simpletmsback.i18n.I18n;
 import ru.vtkachenko.simpletmsback.i18n.I18nPackage;
 
@@ -25,5 +27,11 @@ public class ApplicationAdvice {
     public ErrorInfo handleConstraintException(ConstraintViolationException e) {
         String constraintName = e.getConstraintName();
         return new ErrorInfo(1000, i18n.translate(constraintName, I18nPackage.ERROR));
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorInfo> handleBusinessException(BusinessException e) {
+        ErrorInfo clientErrorInfo = new ErrorInfo(e.getCode(), i18n.translate(e.getMessageCode(), I18nPackage.ERROR));
+        return new ResponseEntity<>(clientErrorInfo, e.getStatusCode());
     }
 }

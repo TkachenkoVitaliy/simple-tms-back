@@ -3,6 +3,7 @@ package ru.vtkachenko.simpletmsback.controller;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.vtkachenko.simpletmsback.dto.ProjectDto;
 import ru.vtkachenko.simpletmsback.service.ProjectService;

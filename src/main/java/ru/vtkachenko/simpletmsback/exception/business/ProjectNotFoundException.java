@@ -8,6 +8,21 @@ public class ProjectNotFoundException extends BusinessException {
     private static final HttpStatus STATUS_CODE = HttpStatus.NOT_FOUND;
 
     public ProjectNotFoundException(String message) {
-        super(message, CODE, MESSAGE_CODE, STATUS_CODE);
+        super(message);
+    }
+
+    @Override
+    public int getCode() {
+        return CODE;
+    }
+
+    @Override
+    public String getMessageCode() {
+        return MESSAGE_CODE;
+    }
+
+    @Override
+    public HttpStatus getStatusCode() {
+        return STATUS_CODE;
     }
 }
