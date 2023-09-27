@@ -31,4 +31,10 @@ public class ProjectController {
         log.info("Request [/api/v1/projects] method [POST] - createProject. Request body - [{}]", projectDto);
         return projectService.createProject(projectDto);
     }
+
+    @PutMapping
+    public ProjectDto updateProject(@Valid @RequestBody ProjectDto projectDto) {
+        log.info("Request [/api/v1/projects] method [PUT] - updateProject. Request body - [{}]", projectDto);
+        return projectService.updateProject(projectDto);
+    }
 }

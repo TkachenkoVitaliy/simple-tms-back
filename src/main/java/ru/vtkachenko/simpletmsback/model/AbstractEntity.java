@@ -19,8 +19,11 @@ import java.time.Instant;
 public abstract class AbstractEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // TODO в классах Project, TestSuite, TestCase можем использовать IDENTITY т.к. сохраняем сущности только по одной за раз
+    // TODO но в классе TestStep может быть создано несколько за раз - может быть стоит использовать SEQUENCE с allocationSize
+    // https://jpa-buddy.com/blog/the-ultimate-guide-on-db-generated/
     private Long id;
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @CreationTimestamp
     private Instant createdDt;
     @Column(nullable = false)
