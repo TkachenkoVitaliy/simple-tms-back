@@ -9,10 +9,18 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 public class I18nConfig {
 
     @Bean
-    public MessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasenames("classpath:/messages/error_messages", "classpath:/messages/messages");
-        messageSource.setDefaultEncoding("UTF-8");
-        return messageSource;
+    public MessageSource errorMessageSource() {
+        ReloadableResourceBundleMessageSource errorMessageSource = new ReloadableResourceBundleMessageSource();
+        errorMessageSource.setBasename("classpath:/messages/error_messages");
+        errorMessageSource.setDefaultEncoding("UTF-8");
+        return errorMessageSource;
+    }
+
+    @Bean
+    public MessageSource defaultMessageSource() {
+        ReloadableResourceBundleMessageSource defaultMessageSource = new ReloadableResourceBundleMessageSource();
+        defaultMessageSource.setBasename("classpath:/messages/messages");
+        defaultMessageSource.setDefaultEncoding("UTF-8");
+        return defaultMessageSource;
     }
 }

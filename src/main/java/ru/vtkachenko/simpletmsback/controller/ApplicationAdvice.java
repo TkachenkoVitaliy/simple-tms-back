@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.vtkachenko.simpletmsback.dto.ErrorInfo;
 import ru.vtkachenko.simpletmsback.i18n.I18n;
+import ru.vtkachenko.simpletmsback.i18n.I18nPackage;
 
 @Slf4j
 @RestControllerAdvice
@@ -23,6 +24,6 @@ public class ApplicationAdvice {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorInfo handleConstraintException(ConstraintViolationException e) {
         String constraintName = e.getConstraintName();
-        return new ErrorInfo(1000, i18n.translate(constraintName));
+        return new ErrorInfo(1000, i18n.translate(constraintName, I18nPackage.ERROR));
     }
 }
