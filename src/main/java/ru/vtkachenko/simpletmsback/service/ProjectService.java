@@ -62,7 +62,7 @@ public class ProjectService {
     }
 
     private List<Project> findAllProjects() {
-        return repository.findAll();
+        return repository.findAllByOrderByCreatedDtDesc();
     }
 
     private Optional<Project> findProjectById(Long id) {
