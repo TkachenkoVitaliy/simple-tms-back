@@ -12,6 +12,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@CrossOrigin("*")
 @RequestMapping(value = "/api/v1/projects", produces = "application/json")
 public class ProjectController {
     private final ProjectService projectService;
@@ -27,6 +28,12 @@ public class ProjectController {
         return projectService.getAllProjects();
     }
 
+    @GetMapping("/{id}")
+    public ProjectDto getProjectById(@PathVariable Long id) {
+        log.info("Request [/api/v1/project/{}] method [GET] - getProjectById.", id);
+        return projectService.getProjectById(id);
+    }
+
     @PostMapping
     public ProjectDto createProject(@Valid @RequestBody ProjectDto projectDto) {
         log.info("Request [/api/v1/projects] method [POST] - createProject. Request body - [{}]", projectDto);
@@ -37,5 +44,12 @@ public class ProjectController {
     public ProjectDto updateProject(@Valid @RequestBody ProjectDto projectDto) {
         log.info("Request [/api/v1/projects] method [PUT] - updateProject. Request body - [{}]", projectDto);
         return projectService.updateProject(projectDto);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProject(@PathVariable Long id) {
+        log.info("Request [/api/v1/projects/{}] method [DELETE] - deleteProject", id );
+        projectService.deleteProject(id);
     }
 }
