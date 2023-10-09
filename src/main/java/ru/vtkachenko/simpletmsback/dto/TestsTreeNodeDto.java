@@ -8,20 +8,21 @@ import java.util.List;
 
 @Data
 public class TestsTreeNodeDto {
-    private long id;
+    private String id;
     private String text;
-    private long parent;
+    private String parent;
     private boolean droppable;
 
     private TestsTreeNodeDataDto data;
 
     @Builder
-    public TestsTreeNodeDto(long id, String text, long parent, List<Long> children, TestsTreeNodeType type) {
-        this.id = id;
+    public TestsTreeNodeDto(long id, String text, String parent, List<String> children, TestsTreeNodeType type) {
+        this.id = type.toString().toLowerCase() + "/" + id;
         this.text = text;
         this.parent = parent;
         this.droppable = type == TestsTreeNodeType.SUITE;
         this.data = TestsTreeNodeDataDto.builder()
+                .id(id)
                 .children(children)
                 .type(type)
                 .build();

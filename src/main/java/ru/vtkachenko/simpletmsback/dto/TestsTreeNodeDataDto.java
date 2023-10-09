@@ -10,7 +10,8 @@ import java.util.List;
 @Data
 @Builder
 public class TestsTreeNodeDataDto {
+    Long id;
     @Builder.Default
-    List<Long> children = new ArrayList<>();
+    List<String> children = new ArrayList<>();
     TestsTreeNodeType type;
 }

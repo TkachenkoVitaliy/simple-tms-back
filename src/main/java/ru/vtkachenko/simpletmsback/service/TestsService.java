@@ -30,31 +30,35 @@ public class TestsService {
 
 
     public List<TestsTreeNodeDto> getTestsTreeByProject(Long projectId) {
+        final String SUITE = "suite/";
+        final String CASE = "case/";
+
+
         List<TestSuite> testSuites = testSuiteRepository.findTestSuiteByProject_Id(projectId);
         List<TestCase> testCases = testCaseRepository.findTestCaseByProject_Id(projectId);
         List<TestsTreeNodeDto> treeNodes = new ArrayList<>();
 
-        Map<Long, List<Long>> nodeChildren = new HashMap<>();
+        Map<String, List<String>> nodeChildren = new HashMap<>();
 
         testSuites.forEach(testSuite -> {
-            Long parentId = testSuite.getParentSuite() == null ? null : testSuite.getParentSuite().getId();
-            List<Long> children = nodeChildren.computeIfAbsent(parentId, k -> new ArrayList<>());
-            children.add(testSuite.getId());
+            String parentSyntheticId = testSuite.getParentSuite() == null ? null : SUITE + testSuite.getParentSuite().getId();
+            List<String> children = nodeChildren.computeIfAbsent(parentSyntheticId, k -> new ArrayList<>());
+            children.add(SUITE + testSuite.getId());
         });
 
         testCases.forEach(testCase -> {
-            Long parentId = testCase.getParentSuite() == null ? null : testCase.getParentSuite().getId();
-            List<Long> children = nodeChildren.computeIfAbsent(parentId, k -> new ArrayList<>());
-            children.add(testCase.getId());
+            String parentSyntheticId = testCase.getParentSuite() == null ? null : SUITE + testCase.getParentSuite().getId();
+            List<String> children = nodeChildren.computeIfAbsent(parentSyntheticId, k -> new ArrayList<>());
+            children.add(CASE + testCase.getId());
         });
 
         testSuites.forEach(testSuite -> {
             TestsTreeNodeDto treeNode = TestsTreeNodeDto.builder()
                     .id(testSuite.getId())
                     .text(testSuite.getName())
-                    .parent(testSuite.getParentSuite() == null ? 0 : testSuite.getParentSuite().getId())
+                    .parent(testSuite.getParentSuite() == null ? "0" : SUITE + testSuite.getParentSuite().getId())
                     .type(TestsTreeNodeType.SUITE)
-                    .children(nodeChildren.getOrDefault(testSuite.getId(), new ArrayList<>()))
+                    .children(nodeChildren.getOrDefault(SUITE + testSuite.getId(), new ArrayList<>()))
                     .build();
             treeNodes.add(treeNode);
         });
@@ -63,9 +67,9 @@ public class TestsService {
             TestsTreeNodeDto treeNode = TestsTreeNodeDto.builder()
                     .id(testCase.getId())
                     .text(testCase.getName())
-                    .parent(testCase.getParentSuite() == null ? 0 : testCase.getParentSuite().getId())
+                    .parent(testCase.getParentSuite() == null ? "0" : SUITE + testCase.getParentSuite().getId())
                     .type(TestsTreeNodeType.CASE)
-                    .children(nodeChildren.getOrDefault(testCase.getId(), new ArrayList<>()))
+                    .children(new ArrayList<>())
                     .build();
             treeNodes.add(treeNode);
         });
