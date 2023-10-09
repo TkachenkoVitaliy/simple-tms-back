@@ -5,16 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.vtkachenko.simpletmsback.constant.TestsTreeNodeType;
 import ru.vtkachenko.simpletmsback.dto.TestsTreeNodeDto;
+import ru.vtkachenko.simpletmsback.dto.request.TestsTreeNodeUpdateParentDto;
 import ru.vtkachenko.simpletmsback.model.Project;
 import ru.vtkachenko.simpletmsback.model.TestCase;
 import ru.vtkachenko.simpletmsback.model.TestSuite;
 import ru.vtkachenko.simpletmsback.repository.TestCaseRepository;
 import ru.vtkachenko.simpletmsback.repository.TestSuiteRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -78,4 +76,20 @@ public class TestsService {
     }
 
 
+    public void updateTestsTreeNodeParentSuite(Long nodeId, TestsTreeNodeUpdateParentDto updateParentDto) {
+        if (!Objects.equals(nodeId, updateParentDto.getNodeId())) {
+            throw new RuntimeException(""); // TODO создать ошибку для таких случаев
+        }
+        if (updateParentDto.getType() == TestsTreeNodeType.SUITE) {
+            TestSuite testSuite = testSuiteRepository.findById(nodeId).orElseThrow(() -> new RuntimeException(""));
+            TestSuite parentSuite = updateParentDto.getParentId() == null
+                    ? null
+                    : testSuiteRepository.getReferenceById(updateParentDto.getParentId());
+            testSuite.setParentSuite(parentSuite);
+            testSuiteRepository.save(testSuite);
+        }
+        if (updateParentDto.getType() == TestsTreeNodeType.CASE) {
+
+        }
+    }
 }
