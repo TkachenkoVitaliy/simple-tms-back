@@ -22,6 +22,7 @@ public class TestsController {
 
     @GetMapping("/{id}")
     public List<TestsTreeNodeDto> getProjectTestsTree(@PathVariable Long id) {
+        log.info("Request [/api/v1/tests/{}] method [GET] - getProjectTestsTree.", id);
         return testsService.getTestsTreeByProject(id);
     }
 }
