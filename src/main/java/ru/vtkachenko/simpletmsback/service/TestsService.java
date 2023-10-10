@@ -54,7 +54,7 @@ public class TestsService {
             TestsTreeNodeDto treeNode = TestsTreeNodeDto.builder()
                     .id(testSuite.getId())
                     .text(testSuite.getName())
-                    .parent(testSuite.getParentSuite() == null ? "0" : SUITE + testSuite.getParentSuite().getId())
+                    .parentId(testSuite.getParentSuite() == null ? null : testSuite.getParentSuite().getId())
                     .type(TestsTreeNodeType.SUITE)
                     .children(nodeChildren.getOrDefault(SUITE + testSuite.getId(), new ArrayList<>()))
                     .build();
@@ -65,7 +65,7 @@ public class TestsService {
             TestsTreeNodeDto treeNode = TestsTreeNodeDto.builder()
                     .id(testCase.getId())
                     .text(testCase.getName())
-                    .parent(testCase.getParentSuite() == null ? "0" : SUITE + testCase.getParentSuite().getId())
+                    .parentId(testCase.getParentSuite() == null ? null : testCase.getParentSuite().getId())
                     .type(TestsTreeNodeType.CASE)
                     .children(new ArrayList<>())
                     .build();
@@ -89,7 +89,12 @@ public class TestsService {
             testSuiteRepository.save(testSuite);
         }
         if (updateParentDto.getType() == TestsTreeNodeType.CASE) {
-
+            TestCase testCase = testCaseRepository.findById(nodeId).orElseThrow(() -> new RuntimeException(""));
+            TestSuite parentSuite = updateParentDto.getParentId() == null
+                    ? null
+                    : testSuiteRepository.getReferenceById(updateParentDto.getParentId());
+            testCase.setParentSuite(parentSuite);
+            testCaseRepository.save(testCase);
         }
     }
 }

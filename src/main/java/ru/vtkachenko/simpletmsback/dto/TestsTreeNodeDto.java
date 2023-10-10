@@ -16,15 +16,16 @@ public class TestsTreeNodeDto {
     private TestsTreeNodeDataDto data;
 
     @Builder
-    public TestsTreeNodeDto(long id, String text, String parent, List<String> children, TestsTreeNodeType type) {
+    public TestsTreeNodeDto(long id, String text, Long parentId, List<String> children, TestsTreeNodeType type) {
         this.id = type.toString().toLowerCase() + "/" + id;
         this.text = text;
-        this.parent = parent;
+        this.parent = parentId == null ? "0" : "suite/" + parentId;
         this.droppable = type == TestsTreeNodeType.SUITE;
         this.data = TestsTreeNodeDataDto.builder()
                 .id(id)
                 .children(children)
                 .type(type)
+                .parentId(parentId)
                 .build();
     }
 }

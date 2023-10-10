@@ -14,4 +14,5 @@ public class TestsTreeNodeDataDto {
     @Builder.Default
     List<String> children = new ArrayList<>();
     TestsTreeNodeType type;
+    Long parentId;
 }
