@@ -1,5 +1,8 @@
 package ru.vtkachenko.simpletmsback.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -15,11 +18,14 @@ import java.util.Objects;
 @Entity
 @Table(name = "steps_cases_rel")
 public class StepCaseRel implements Serializable {
+    @JsonIgnore
     @EmbeddedId
     private StepCaseId id;
+    @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("testStepId")
     private TestStep testStep;
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("testCaseId")
     private TestCase testCase;

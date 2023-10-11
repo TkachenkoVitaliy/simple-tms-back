@@ -31,7 +31,7 @@ public class ProjectService {
 
     public ProjectDto getProjectById (Long id) {
         Project project = findProjectById(id).orElseThrow(() -> {
-            String message = String.format("Cant update project with id - %s, cause project with this id not found", id);
+            String message = String.format("Cant find project with id - %s", id);
             log.error(message);
             throw new ProjectNotFoundException(message);
         });

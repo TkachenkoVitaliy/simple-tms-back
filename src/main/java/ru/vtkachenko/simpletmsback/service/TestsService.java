@@ -3,6 +3,7 @@ package ru.vtkachenko.simpletmsback.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vtkachenko.simpletmsback.constant.TestsTreeNodeType;
 import ru.vtkachenko.simpletmsback.dto.TestsTreeNodeDto;
 import ru.vtkachenko.simpletmsback.dto.request.TestsTreeNodeUpdateParentDto;
@@ -27,6 +28,7 @@ public class TestsService {
     }
 
 
+    @Transactional
     public List<TestsTreeNodeDto> getTestsTreeByProject(Long projectId) {
         final String SUITE = "suite/";
         final String CASE = "case/";
@@ -76,6 +78,7 @@ public class TestsService {
     }
 
 
+    @Transactional
     public void updateTestsTreeNodeParentSuite(Long nodeId, TestsTreeNodeUpdateParentDto updateParentDto) {
         if (!Objects.equals(nodeId, updateParentDto.getNodeId())) {
             throw new RuntimeException(""); // TODO создать ошибку для таких случаев
