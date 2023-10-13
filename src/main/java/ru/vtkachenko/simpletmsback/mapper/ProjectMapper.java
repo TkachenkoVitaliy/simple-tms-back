@@ -1,6 +1,5 @@
 package ru.vtkachenko.simpletmsback.mapper;
 
-import lombok.experimental.UtilityClass;
 import org.springframework.stereotype.Component;
 import ru.vtkachenko.simpletmsback.dto.ProjectDto;
 import ru.vtkachenko.simpletmsback.model.Project;

@@ -29,7 +29,6 @@ public class ProjectService {
     public Project getProjectReferenceById(Long projectId) {
         try {
             return projectRepository.getReferenceById(projectId);
-
         } catch (EntityNotFoundException e) {
             String message = String.format("Cant find project with id - %s", projectId);
             log.error(message);
@@ -43,7 +42,7 @@ public class ProjectService {
                 .toList();
     }
 
-    public ProjectDto getProjectById (Long id) {
+    public ProjectDto getProjectById(Long id) {
         Project project = findProjectById(id).orElseThrow(() -> {
             String message = String.format("Cant find project with id - %s", id);
             log.error(message);
@@ -61,12 +60,11 @@ public class ProjectService {
 
     @Transactional
     public ProjectDto updateProject(ProjectDto projectDto) {
-//        projectRepository.findById(projectDto.getId()).orElseThrow(() -> {
-//            String message = String.format("Cant update project with id - %s, cause project with this id not found", projectDto.getId());
-//            log.error(message);
-//            throw new ProjectNotFoundException(message);
-//        });
-        Project project = projectRepository.findById(projectDto.getId()).orElseThrow(() -> new RuntimeException(""));
+        Project project = projectRepository.findById(projectDto.getId()).orElseThrow(() -> {
+            String message = String.format("Cant update project with id - %s, cause project with this id not found", projectDto.getId());
+            log.error(message);
+            throw new ProjectNotFoundException(message);
+        });
         project.setName(projectDto.getName());
         project.setDescription(projectDto.getDescription());
         return mapper.toDto(project);
