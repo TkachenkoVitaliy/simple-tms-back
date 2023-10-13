@@ -21,6 +21,7 @@ public class TestsService {
     private final TestSuiteRepository testSuiteRepository;
     private final TestCaseRepository testCaseRepository;
 
+    // TODO переделать на использование сервисов
     @Autowired
     public TestsService(TestSuiteRepository testSuiteRepository, TestCaseRepository testCaseRepository) {
         this.testSuiteRepository = testSuiteRepository;

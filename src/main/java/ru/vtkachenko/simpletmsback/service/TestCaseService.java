@@ -19,7 +19,7 @@ public class TestCaseService {
     }
 
     public TestCase getTestCase(Long id) {
-        return testCaseRepository.findById(id).orElseThrow(() -> {
+        return testCaseRepository.getTestCaseById(id).orElseThrow(() -> {
             String message = String.format("Cant find test case with id - %s", id);
             log.error(message);
             throw new TestCaseNotFoundException(message);

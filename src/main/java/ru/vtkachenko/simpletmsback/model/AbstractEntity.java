@@ -30,5 +30,4 @@ public abstract class AbstractEntity implements Serializable {
     @UpdateTimestamp
     private Instant modifiedDt;
     // TODO: возможно стоит добавить @CreatedBy @LastModifiedBy
-    // TODO: вынести в базовую хранимую сущность id, createDt, modifiedDt
 }

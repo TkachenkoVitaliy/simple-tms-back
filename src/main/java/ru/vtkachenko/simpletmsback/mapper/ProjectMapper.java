@@ -1,12 +1,13 @@
 package ru.vtkachenko.simpletmsback.mapper;
 
 import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Component;
 import ru.vtkachenko.simpletmsback.dto.ProjectDto;
 import ru.vtkachenko.simpletmsback.model.Project;
 
-@UtilityClass
-public class ProjectMapper {
-    public static ProjectDto toDto(Project entity) {
+@Component
+public class ProjectMapper implements EntityMapper<ProjectDto, Project> {
+    public ProjectDto toDto(Project entity) {
         return ProjectDto.builder()
                 .id(entity.getId())
                 .name(entity.getName() != null ? entity.getName() : "")
@@ -14,7 +15,7 @@ public class ProjectMapper {
                 .build();
     }
 
-    public static Project toEntity(ProjectDto dto) {
+    public Project toEntity(ProjectDto dto) {
         return Project.builder()
                 .id(dto.getId())
                 .name(dto.getName())

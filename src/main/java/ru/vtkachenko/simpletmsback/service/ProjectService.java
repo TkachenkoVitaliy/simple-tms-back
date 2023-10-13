@@ -1,5 +1,6 @@
 package ru.vtkachenko.simpletmsback.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,16 +17,29 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class ProjectService {
-    private final ProjectRepository repository;
+    private final ProjectRepository projectRepository;
+    private final ProjectMapper mapper;
 
     @Autowired
-    public ProjectService(ProjectRepository repository) {
-        this.repository = repository;
+    public ProjectService(ProjectRepository projectRepository, ProjectMapper mapper) {
+        this.projectRepository = projectRepository;
+        this.mapper = mapper;
+    }
+
+    public Project getProjectReferenceById(Long projectId) {
+        try {
+            return projectRepository.getReferenceById(projectId);
+
+        } catch (EntityNotFoundException e) {
+            String message = String.format("Cant find project with id - %s", projectId);
+            log.error(message);
+            throw new ProjectNotFoundException(message);
+        }
     }
 
     public List<ProjectDto> getAllProjects() {
         return findAllProjects().stream()
-                .map(ProjectMapper::toDto)
+                .map(mapper::toDto)
                 .toList();
     }
 
@@ -35,41 +49,43 @@ public class ProjectService {
             log.error(message);
             throw new ProjectNotFoundException(message);
         });
-        return ProjectMapper.toDto(project);
+        return mapper.toDto(project);
     }
 
     @Transactional
     public ProjectDto createProject(ProjectDto projectDto) {
-        Project project = ProjectMapper.toEntity(projectDto);
+        Project project = mapper.toEntity(projectDto);
         project = saveProject(project);
-        return ProjectMapper.toDto(project);
+        return mapper.toDto(project);
     }
 
     @Transactional
     public ProjectDto updateProject(ProjectDto projectDto) {
-        repository.findById(projectDto.getId()).orElseThrow(() -> {
-            String message = String.format("Cant update project with id - %s, cause project with this id not found", projectDto.getId());
-            log.error(message);
-            throw new ProjectNotFoundException(message);
-        });
-        Project project = saveProject(ProjectMapper.toEntity(projectDto));
-        return ProjectMapper.toDto(project);
+//        projectRepository.findById(projectDto.getId()).orElseThrow(() -> {
+//            String message = String.format("Cant update project with id - %s, cause project with this id not found", projectDto.getId());
+//            log.error(message);
+//            throw new ProjectNotFoundException(message);
+//        });
+        Project project = projectRepository.findById(projectDto.getId()).orElseThrow(() -> new RuntimeException(""));
+        project.setName(projectDto.getName());
+        project.setDescription(projectDto.getDescription());
+        return mapper.toDto(project);
     }
 
     @Transactional
     public void deleteProject(Long id) {
-        repository.deleteById(id);
+        projectRepository.deleteById(id);
     }
 
     private List<Project> findAllProjects() {
-        return repository.findAllByOrderByCreatedDtDesc();
+        return projectRepository.findAllByOrderByCreatedDtDesc();
     }
 
     private Optional<Project> findProjectById(Long id) {
-        return repository.findById(id);
+        return projectRepository.findById(id);
     }
 
     private Project saveProject(Project project) {
-        return repository.save(project);
+        return projectRepository.save(project);
     }
 }

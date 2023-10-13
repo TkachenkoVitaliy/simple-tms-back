@@ -27,7 +27,6 @@ public class TestStep extends AbstractEntity {
     private String action;
     private String expected;
     // TODO добавить поле с файлами (Set сущностей файла - id, link-ссылка на файл для скачивания/мб открытия онлайн, name)
-    // TODO private Integer orderNumber; - нужна промежуточная сущность для указания индекса степа в тест кейсе
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
