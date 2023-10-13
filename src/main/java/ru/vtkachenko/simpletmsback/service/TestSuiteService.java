@@ -20,14 +20,11 @@ import java.util.List;
 public class TestSuiteService {
 
     private final TestSuiteRepository testSuiteRepository;
-    private final ProjectService projectService;
-
     private final TestSuiteMapper mapper;
 
     @Autowired
-    public TestSuiteService(TestSuiteRepository testSuiteRepository, ProjectService projectService, @Lazy TestSuiteMapper mapper) {
+    public TestSuiteService(TestSuiteRepository testSuiteRepository, @Lazy TestSuiteMapper mapper) {
         this.testSuiteRepository = testSuiteRepository;
-        this.projectService = projectService;
         this.mapper = mapper;
     }
 
@@ -60,13 +57,7 @@ public class TestSuiteService {
             log.error(message);
             throw new TestSuiteNotFoundException(message);
         });
-        return TestSuiteDto.builder()
-                .id(testSuite.getId())
-                .projectId(testSuite.getProject().getId())
-                .parentSuiteId(testSuite.getParentSuite() == null ? null : testSuite.getParentSuite().getId())
-                .name(testSuite.getName())
-                .description(testSuite.getDescription())
-                .build();
+        return mapper.toDto(testSuite);
     }
 
     @Transactional
@@ -78,13 +69,20 @@ public class TestSuiteService {
 
     @Transactional
     public TestSuiteDto updateTestSuite(TestSuiteDto testSuiteDto) {
-        testSuiteRepository.findById(testSuiteDto.getId()).orElseThrow(() -> {
+        TestSuite testSuite = testSuiteRepository.findById(testSuiteDto.getId()).orElseThrow(() -> {
             String message = String.format("Cant update test suite with id - %s, cause test suite with this id not found", testSuiteDto.getId());
             log.error(message);
             throw new TestSuiteNotFoundException(message);
         });
-        TestSuite testSuite = testSuiteRepository.save(mapper.toEntity(testSuiteDto));
+        testSuite.setParentSuite(getTestSuiteReferenceById(testSuiteDto.getParentSuiteId()));
+        testSuite.setName(testSuiteDto.getName());
+        testSuite.setDescription(testSuiteDto.getDescription());
         return mapper.toDto(testSuite);
 
+    }
+
+    @Transactional
+    public void deleteTestSuite(Long id) {
+        testSuiteRepository.deleteById(id);
     }
 }

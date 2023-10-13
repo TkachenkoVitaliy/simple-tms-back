@@ -37,13 +37,13 @@ public class ProjectService {
     }
 
     public List<ProjectDto> getAllProjects() {
-        return findAllProjects().stream()
+        return projectRepository.findAllByOrderByCreatedDtDesc().stream()
                 .map(mapper::toDto)
                 .toList();
     }
 
     public ProjectDto getProjectById(Long id) {
-        Project project = findProjectById(id).orElseThrow(() -> {
+        Project project = projectRepository.findById(id).orElseThrow(() -> {
             String message = String.format("Cant find project with id - %s", id);
             log.error(message);
             throw new ProjectNotFoundException(message);
@@ -54,7 +54,7 @@ public class ProjectService {
     @Transactional
     public ProjectDto createProject(ProjectDto projectDto) {
         Project project = mapper.toEntity(projectDto);
-        project = saveProject(project);
+        project = projectRepository.save(project);
         return mapper.toDto(project);
     }
 
@@ -73,17 +73,5 @@ public class ProjectService {
     @Transactional
     public void deleteProject(Long id) {
         projectRepository.deleteById(id);
-    }
-
-    private List<Project> findAllProjects() {
-        return projectRepository.findAllByOrderByCreatedDtDesc();
-    }
-
-    private Optional<Project> findProjectById(Long id) {
-        return projectRepository.findById(id);
-    }
-
-    private Project saveProject(Project project) {
-        return projectRepository.save(project);
     }
 }
