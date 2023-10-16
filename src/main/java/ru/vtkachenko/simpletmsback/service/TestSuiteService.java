@@ -78,7 +78,6 @@ public class TestSuiteService {
         testSuite.setName(testSuiteDto.getName());
         testSuite.setDescription(testSuiteDto.getDescription());
         return mapper.toDto(testSuite);
-
     }
 
     @Transactional

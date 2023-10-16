@@ -14,7 +14,6 @@ public class TestStepDto {
     @NotNull
     private String action;
     private String expected;
-    private Long testCaseId;
     @NotNull
-    private Integer orderNumber;
+    private Long projectId;
 }

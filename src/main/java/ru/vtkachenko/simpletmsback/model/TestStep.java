@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ public class TestStep extends AbstractEntity {
     private Boolean repeatable;
     @NotNull
     private String action;
+    @ColumnDefault("")
     private String expected;
     // TODO добавить поле с файлами (Set сущностей файла - id, link-ссылка на файл для скачивания/мб открытия онлайн, name)
 

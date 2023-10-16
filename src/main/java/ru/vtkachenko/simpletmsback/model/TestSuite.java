@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class TestSuite extends AbstractEntity {
 
     @NotNull
     private String name;
+    @ColumnDefault("")
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)

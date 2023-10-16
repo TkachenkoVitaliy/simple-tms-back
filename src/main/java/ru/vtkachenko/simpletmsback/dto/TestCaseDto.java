@@ -11,10 +11,12 @@ import java.util.List;
 @Builder
 public class TestCaseDto {
     private Long id;
+    private Long parentSuiteId;
     @NotNull
     private String name;
     private String preconditions;
-    private Long parentSuiteId;
     @Builder.Default
-    private List<TestStepDto> testSteps = new ArrayList<>();
+    private List<TestStepDto> steps = new ArrayList<>();
+    @NotNull
+    private Long projectId;
 }
