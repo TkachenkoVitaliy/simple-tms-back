@@ -1,8 +1,10 @@
 package ru.vtkachenko.simpletmsback.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.vtkachenko.simpletmsback.dto.TestCaseDto;
 import ru.vtkachenko.simpletmsback.model.TestCase;
 import ru.vtkachenko.simpletmsback.service.TestCaseService;
 
@@ -19,7 +21,14 @@ public class TestCaseController {
     }
 
     @GetMapping("/{id}")
-    public TestCase getTestCaseSteps(@PathVariable Long id) {
+    public TestCase getTestCase(@PathVariable Long id) {
         return testCaseService.getTestCase(id);
+    }
+
+    @PostMapping
+    public TestCase createTestCase(@Valid @RequestBody TestCaseDto testCaseDto) {
+        log.info("Request [/api/v1/cases] method [POST] - createTestCase. Request body - [{}]", testCaseDto);
+        // TODO реализовать
+        return new TestCase();
     }
 }

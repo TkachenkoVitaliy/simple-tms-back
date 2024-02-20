@@ -2,7 +2,6 @@ package ru.vtkachenko.simpletmsback.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.vtkachenko.simpletmsback.dto.TestSuiteDto;
-import ru.vtkachenko.simpletmsback.model.Project;
 import ru.vtkachenko.simpletmsback.model.TestSuite;
 import ru.vtkachenko.simpletmsback.service.ProjectService;
 import ru.vtkachenko.simpletmsback.service.TestSuiteService;
@@ -17,6 +16,7 @@ public class TestSuiteMapper implements EntityMapper<TestSuiteDto, TestSuite> {
         this.testSuiteService = testSuiteService;
     }
 
+    @Override
     public TestSuiteDto toDto(TestSuite entity) {
         return TestSuiteDto.builder()
                 .id(entity.getId())
@@ -27,9 +27,10 @@ public class TestSuiteMapper implements EntityMapper<TestSuiteDto, TestSuite> {
                 .build();
     }
 
+    @Override
     public TestSuite toEntity(TestSuiteDto dto) {
         return TestSuite.builder()
-                .id(null)
+                .id(dto.getProjectId())
                 .project(projectService.getProjectReferenceById(dto.getProjectId()))
                 .parentSuite(testSuiteService.getTestSuiteReferenceById(dto.getParentSuiteId()))
                 .name(dto.getName())

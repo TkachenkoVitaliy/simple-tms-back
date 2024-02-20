@@ -6,6 +6,7 @@ import ru.vtkachenko.simpletmsback.model.Project;
 
 @Component
 public class ProjectMapper implements EntityMapper<ProjectDto, Project> {
+    @Override
     public ProjectDto toDto(Project entity) {
         return ProjectDto.builder()
                 .id(entity.getId())
@@ -14,6 +15,7 @@ public class ProjectMapper implements EntityMapper<ProjectDto, Project> {
                 .build();
     }
 
+    @Override
     public Project toEntity(ProjectDto dto) {
         return Project.builder()
                 .id(dto.getId())
@@ -21,5 +23,4 @@ public class ProjectMapper implements EntityMapper<ProjectDto, Project> {
                 .description(dto.getDescription())
                 .build();
     }
-
 }

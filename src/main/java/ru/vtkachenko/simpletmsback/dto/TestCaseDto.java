@@ -16,7 +16,7 @@ public class TestCaseDto {
     private String name;
     private String preconditions;
     @Builder.Default
-    private List<TestStepDto> steps = new ArrayList<>();
+    private List<TestCaseStepDto> steps = new ArrayList<>();
     @NotNull
     private Long projectId;
 }
