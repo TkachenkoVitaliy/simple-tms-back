@@ -62,4 +62,45 @@ public class TestCaseService {
 
         return mapper.toDto(savedTestCase);
     }
+
+    @Transactional
+    public TestCaseDto updateTestCase(TestCaseDto testCaseDto) {
+        TestCase testCase = testCaseRepository.findById(testCaseDto.getId()).orElseThrow(() -> {
+            String message = String.format("Cant update test case with id -%s, cause test case with this id  not found", testCaseDto.getId());
+            log.error(message);
+            throw new TestCaseNotFoundException(message);
+        });
+        TestCase newTestCase = mapper.toEntity(testCaseDto);
+        testCase.setParentSuite(newTestCase.getParentSuite());
+        testCase.setName(newTestCase.getName());
+        testCase.setPreconditions(newTestCase.getPreconditions());
+        testCase.setProject(newTestCase.getProject());
+
+        List<StepCaseId> stepCaseIds = testCase.getTestSteps().stream()
+                .map(StepCaseRel::getId)
+                .collect(Collectors.toList());
+        stepCaseRelRepository.deleteAllByIdInBatch(stepCaseIds);
+        testCase.removeAllTestSteps();
+
+        List<StepCaseRel> stepsCaseRel = testCaseDto.getSteps().stream()
+                .map(testCaseStepDto -> {
+                    TestStepDto testStepDto = testCaseStepDto.getTestStep();
+                    TestStep savedTestStep = testStepService.saveTestStep(testStepDto);
+
+                    StepCaseRel stepCaseRel = StepCaseRel.builder()
+                            .testStep(savedTestStep)
+                            .testCase(testCase)
+                            .id(new StepCaseId(savedTestStep.getId(), testCase.getId()))
+                            .orderNumber(testCaseStepDto.getOrderNumber())
+                            .build();
+
+                    return stepCaseRel;
+                }).collect(Collectors.toList());
+        List<StepCaseRel> savedStepCasesRel = stepCaseRelRepository.saveAll(stepsCaseRel);
+
+        testCase.getTestSteps().addAll(savedStepCasesRel);
+        testCaseRepository.save(testCase);
+
+        return mapper.toDto(testCase);
+    }
 }

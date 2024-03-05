@@ -33,6 +33,15 @@ public class StepCaseId implements Serializable {
                 Objects.equals(testCaseId, that.testCaseId);
     }
 
+
+    @Override
+    public String toString() {
+        return "StepCaseId{" +
+                "testStepId=" + testStepId +
+                ", testCaseId=" + testCaseId +
+                '}';
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(testStepId, testCaseId);

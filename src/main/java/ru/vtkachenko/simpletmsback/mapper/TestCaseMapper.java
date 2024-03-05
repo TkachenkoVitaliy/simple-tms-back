@@ -47,7 +47,7 @@ public class TestCaseMapper implements EntityMapper<TestCaseDto, TestCase> {
                 .name(dto.getName())
                 .preconditions(dto.getPreconditions())
                 .project(projectService.getProjectReferenceById(dto.getProjectId()))
-                .parentSuite(dto.getParentSuiteId() == null ? testSuiteService.getTestSuiteReferenceById(dto.getParentSuiteId()) : null)
+                .parentSuite(dto.getParentSuiteId() == null ? null : testSuiteService.getTestSuiteReferenceById(dto.getParentSuiteId()))
                 .build();
     }
 }

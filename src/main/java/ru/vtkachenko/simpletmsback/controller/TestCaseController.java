@@ -30,4 +30,10 @@ public class TestCaseController {
         log.info("Request [/api/v1/cases] method [POST] - createTestCase. Request body - [{}]", testCaseDto);
         return testCaseService.createTestCase(testCaseDto);
     }
+
+    @PutMapping
+    public TestCaseDto updateTestCase(@Valid @RequestBody TestCaseDto testCaseDto) {
+        log.info("Request [/api/v1/cases] method [PUT] - updateTestCase. Request body - [{}]", testCaseDto);
+        return testCaseService.updateTestCase(testCaseDto);
+    }
 }

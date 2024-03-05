@@ -40,6 +40,10 @@ public class TestCase extends AbstractEntity {
     @Builder.Default
     private List<StepCaseRel> testSteps = new ArrayList<>();
 
+    public void removeAllTestSteps() {
+        this.testSteps.forEach(stepCaseRel -> stepCaseRel.setTestCase(null));
+        this.testSteps.clear();
+    }
 
     @Override
     public boolean equals(Object o) {
