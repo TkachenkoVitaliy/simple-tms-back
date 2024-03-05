@@ -19,6 +19,14 @@ import java.util.Objects;
 @Setter
 @SuperBuilder
 @Entity
+@NamedEntityGraph(
+        name = "TestCase.testSteps.testStep",
+        attributeNodes = @NamedAttributeNode(value = "testSteps", subgraph = "testSteps-subgraph"),
+        subgraphs = @NamedSubgraph(
+                name = "testSteps-subgraph",
+                attributeNodes = @NamedAttributeNode("testStep")
+        )
+)
 @Table(name = "test_cases")
 public class TestCase extends AbstractEntity {
     @NotNull

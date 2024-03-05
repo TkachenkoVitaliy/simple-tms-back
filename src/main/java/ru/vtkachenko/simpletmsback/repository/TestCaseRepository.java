@@ -14,6 +14,9 @@ public interface TestCaseRepository extends JpaRepository<TestCase, Long> {
     List<TestCase> findTestCaseByProject_Id(Long projectId);
     Optional<TestCase> findById(@NotNull Long testCaseId);
 
-    @EntityGraph(attributePaths = {"testSteps", "testSteps.testStep"}, type = EntityGraph.EntityGraphType.LOAD)
+//    @EntityGraph(attributePaths = {"testSteps", "testSteps.testStep"}, type = EntityGraph.EntityGraphType.LOAD)
+//    Optional<TestCase> getTestCaseById(@NotNull Long testCaseId);
+
+    @EntityGraph(value = "TestCase.testSteps.testStep")
     Optional<TestCase> getTestCaseById(@NotNull Long testCaseId);
 }

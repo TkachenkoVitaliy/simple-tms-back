@@ -62,32 +62,40 @@ public class TestCaseService {
 
     @Transactional
     public TestCaseDto updateTestCase(TestCaseDto testCaseDto) {
+        // Получаем список id testStep которые получили от клиента
         List<Long> testStepsIds = testCaseDto.getSteps().stream()
                 .map(testCaseStepDto -> testCaseStepDto.getTestStep().getId())
                 .toList();
 
-        TestCase testCase = testCaseRepository.findById(testCaseDto.getId()).orElseThrow(() -> {
+        // Получаем тест кейс с его зависимости через left join
+        TestCase testCase = testCaseRepository.getTestCaseById(testCaseDto.getId()).orElseThrow(() -> {
             String message = String.format("Cant update test case with id -%s, cause test case with this id  not found",
                     testCaseDto.getId());
             log.error(message);
             throw new TestCaseNotFoundException(message);
         });
+
+        // Обновляем простые аттрибуты тест кейса
         TestCase newTestCase = mapper.toEntity(testCaseDto);
         testCase.setParentSuite(newTestCase.getParentSuite());
         testCase.setName(newTestCase.getName());
         testCase.setPreconditions(newTestCase.getPreconditions());
         testCase.setProject(newTestCase.getProject());
 
+        // Получаем список id тех testStep которые необходимо удалить т.к. они не переиспользуемые и больше не привязаны
+        // к тест кейсу который мы обновляем
         List<Long> orphanNonRepeatableStepIds = testCase.getTestSteps().stream()
                 .map(TestCaseStep::getTestStep)
                 .filter(testStep -> !testStep.getRepeatable())
                 .map(TestStep::getId)
                 .filter(id -> !testStepsIds.contains(id))
                 .collect(Collectors.toList());
+        // Удаляем все старые testCaseSteps
         testCase.removeAllTestSteps();
+        // Вызываем persist для фактического их удаления
         TestCase testCaseWithoutSteps = testCaseRepository.save(testCase);
-
-        List<TestCaseStep> stepsCaseRel = testCaseDto.getSteps().stream()
+        // Создаем новые testCaseSteps
+        List<TestCaseStep> testCaseSteps = testCaseDto.getSteps().stream()
                 .map(testCaseStepDto -> {
                     TestStepDto testStepDto = testCaseStepDto.getTestStep();
                     TestStep savedTestStep = testStepService.saveTestStep(testStepDto);
@@ -98,9 +106,13 @@ public class TestCaseService {
                             .id(new TestCaseStepId(savedTestStep.getId(), testCaseWithoutSteps.getId(), testCaseStepDto.getOrderNumber()))
                             .build();
                 }).collect(Collectors.toList());
-        List<TestCaseStep> savedStepCasesRel = stepCaseRelRepository.saveAll(stepsCaseRel);
+        // Сохраняем их в БД
+        List<TestCaseStep> newTestCaseSteps = stepCaseRelRepository.saveAll(testCaseSteps);
+        // Удаляем осиротевшие testStep из базы данных
         testStepService.deleteAllById(orphanNonRepeatableStepIds);
-        testCaseWithoutSteps.getTestSteps().addAll(savedStepCasesRel);
+        // Добавляем новые созданные testCaseSteps в entity TestCase
+        testCaseWithoutSteps.getTestSteps().addAll(newTestCaseSteps);
+        // Возвращаем результат
         return mapper.toDto(testCaseRepository.save(testCaseWithoutSteps));
     }
 }
