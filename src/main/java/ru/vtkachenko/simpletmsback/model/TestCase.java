@@ -35,7 +35,7 @@ public class TestCase extends AbstractEntity {
     @ToString.Exclude
     private TestSuite parentSuite;
     @JsonManagedReference
-    @OneToMany(mappedBy = "testCase")
+    @OneToMany(mappedBy = "testCase", orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default
     private List<StepCaseRel> testSteps = new ArrayList<>();

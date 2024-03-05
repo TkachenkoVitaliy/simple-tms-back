@@ -58,7 +58,7 @@ public class TestCaseService {
                 }).collect(Collectors.toList());
         List<StepCaseRel> savedStepsCaseRel = stepCaseRelRepository.saveAll(stepsCaseRel);
 
-        savedTestCase.setTestSteps(savedStepsCaseRel);
+        savedTestCase.getTestSteps().addAll(savedStepsCaseRel);
 
         return mapper.toDto(savedTestCase);
     }
