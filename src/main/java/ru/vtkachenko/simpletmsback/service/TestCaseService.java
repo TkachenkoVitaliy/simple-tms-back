@@ -92,8 +92,9 @@ public class TestCaseService {
                 .collect(Collectors.toList());
         // Удаляем все старые testCaseSteps
         testCase.removeAllTestSteps();
-        // Вызываем persist для фактического их удаления
-        TestCase testCaseWithoutSteps = testCaseRepository.save(testCase);
+        // Удаляем осиротевшие непереиспользуемые testSteps
+        testStepService.deleteAllById(orphanNonRepeatableStepIds);
+
         // Создаем новые testCaseSteps
         List<TestCaseStep> testCaseSteps = testCaseDto.getSteps().stream()
                 .map(testCaseStepDto -> {
@@ -102,17 +103,13 @@ public class TestCaseService {
 
                     return TestCaseStep.builder()
                             .testStep(savedTestStep)
-                            .testCase(testCaseWithoutSteps)
-                            .id(new TestCaseStepId(savedTestStep.getId(), testCaseWithoutSteps.getId(), testCaseStepDto.getOrderNumber()))
+                            .testCase(testCase)
+                            .id(new TestCaseStepId(savedTestStep.getId(), testCase.getId(), testCaseStepDto.getOrderNumber()))
                             .build();
                 }).collect(Collectors.toList());
-        // Сохраняем их в БД
-        List<TestCaseStep> newTestCaseSteps = stepCaseRelRepository.saveAll(testCaseSteps);
-        // Удаляем осиротевшие testStep из базы данных
-        testStepService.deleteAllById(orphanNonRepeatableStepIds);
         // Добавляем новые созданные testCaseSteps в entity TestCase
-        testCaseWithoutSteps.getTestSteps().addAll(newTestCaseSteps);
+        testCase.getTestSteps().addAll(testCaseSteps);
         // Возвращаем результат
-        return mapper.toDto(testCaseRepository.save(testCaseWithoutSteps));
+        return mapper.toDto(testCaseRepository.save(testCase));/*testCaseWithoutSteps));*/
     }
 }

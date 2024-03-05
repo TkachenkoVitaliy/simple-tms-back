@@ -17,6 +17,6 @@ public interface TestCaseRepository extends JpaRepository<TestCase, Long> {
 //    @EntityGraph(attributePaths = {"testSteps", "testSteps.testStep"}, type = EntityGraph.EntityGraphType.LOAD)
 //    Optional<TestCase> getTestCaseById(@NotNull Long testCaseId);
 
-    @EntityGraph(value = "TestCase.testSteps.testStep")
+    @EntityGraph(value = "TestCase.testSteps.testStep", type = EntityGraph.EntityGraphType.LOAD)
     Optional<TestCase> getTestCaseById(@NotNull Long testCaseId);
 }
