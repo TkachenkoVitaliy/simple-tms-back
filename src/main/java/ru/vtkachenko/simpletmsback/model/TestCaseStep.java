@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.io.Serializable;
@@ -17,10 +16,10 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "steps_cases_rel")
-public class StepCaseRel implements Serializable {
+public class TestCaseStep implements Serializable {
     @JsonIgnore
     @EmbeddedId
-    private StepCaseId id;
+    private TestCaseStepId id;
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("testStepId")
@@ -30,9 +29,6 @@ public class StepCaseRel implements Serializable {
     @MapsId("testCaseId")
     private TestCase testCase;
 
-    @NotNull
-    private Integer orderNumber;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -40,7 +36,7 @@ public class StepCaseRel implements Serializable {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        StepCaseRel that = (StepCaseRel) o;
+        TestCaseStep that = (TestCaseStep) o;
         return Objects.equals(testStep, that.testStep) &&
                 Objects.equals(testCase, that.testCase);
     }

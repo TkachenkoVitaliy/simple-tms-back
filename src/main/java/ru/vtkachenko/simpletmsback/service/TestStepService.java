@@ -2,7 +2,6 @@ package ru.vtkachenko.simpletmsback.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.vtkachenko.simpletmsback.dto.TestStepDto;
 import ru.vtkachenko.simpletmsback.mapper.TestStepMapper;
@@ -11,7 +10,6 @@ import ru.vtkachenko.simpletmsback.repository.TestStepRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -20,10 +18,6 @@ public class TestStepService {
 
     private final TestStepRepository testStepRepository;
     private final TestStepMapper mapper;
-
-    public TestStepDto createTestStep(TestStepDto testStepDto) {
-        return null;
-    }
 
     public TestStep saveTestStep(TestStepDto testStepDto) {
         return testStepRepository.save(mapper.toEntity(testStepDto));
@@ -39,4 +33,7 @@ public class TestStepService {
                 .collect(Collectors.toList());
     }
 
+    public void deleteAllById(List<Long> ids) {
+        testStepRepository.deleteAllById(ids);
+    }
 }

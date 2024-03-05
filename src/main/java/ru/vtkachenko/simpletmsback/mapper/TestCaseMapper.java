@@ -25,7 +25,7 @@ public class TestCaseMapper implements EntityMapper<TestCaseDto, TestCase> {
     public TestCaseDto toDto(TestCase entity) {
         List<TestCaseStepDto> testCaseSteps = entity.getTestSteps().stream()
                 .map((stepCaseRel) -> TestCaseStepDto.builder()
-                        .orderNumber(stepCaseRel.getOrderNumber())
+                        .orderNumber(stepCaseRel.getId().getOrderNumber())
                         .testStep(testStepMapper.toDto(stepCaseRel.getTestStep()))
                         .build())
                 .toList();

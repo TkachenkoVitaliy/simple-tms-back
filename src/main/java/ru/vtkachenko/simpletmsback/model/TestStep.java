@@ -1,7 +1,6 @@
 package ru.vtkachenko.simpletmsback.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -38,7 +37,7 @@ public class TestStep extends AbstractEntity {
     @OneToMany(mappedBy = "testStep", orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default
-    private List<StepCaseRel> testCases = new ArrayList<>();
+    private List<TestCaseStep> testCases = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

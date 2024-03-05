@@ -8,8 +8,8 @@ import ru.vtkachenko.simpletmsback.dto.TestCaseDto;
 import ru.vtkachenko.simpletmsback.dto.TestStepDto;
 import ru.vtkachenko.simpletmsback.exception.business.TestCaseNotFoundException;
 import ru.vtkachenko.simpletmsback.mapper.TestCaseMapper;
-import ru.vtkachenko.simpletmsback.model.StepCaseId;
-import ru.vtkachenko.simpletmsback.model.StepCaseRel;
+import ru.vtkachenko.simpletmsback.model.TestCaseStepId;
+import ru.vtkachenko.simpletmsback.model.TestCaseStep;
 import ru.vtkachenko.simpletmsback.model.TestCase;
 import ru.vtkachenko.simpletmsback.model.TestStep;
 import ru.vtkachenko.simpletmsback.repository.StepCaseRelRepository;
@@ -42,21 +42,18 @@ public class TestCaseService {
         TestCase testCase = mapper.toEntity(testCaseDto);
         TestCase savedTestCase = testCaseRepository.save(testCase);
 
-        List<StepCaseRel> stepsCaseRel = testCaseDto.getSteps().stream()
+        List<TestCaseStep> stepsCaseRel = testCaseDto.getSteps().stream()
                 .map(testCaseStepDto -> {
                     TestStepDto testStepDto = testCaseStepDto.getTestStep();
                     TestStep savedTestStep = testStepService.saveTestStep(testStepDto);
 
-                    StepCaseRel stepCaseRel = StepCaseRel.builder()
+                    return TestCaseStep.builder()
                             .testStep(savedTestStep)
                             .testCase(savedTestCase)
-                            .id(new StepCaseId(savedTestStep.getId(), savedTestCase.getId()))
-                            .orderNumber(testCaseStepDto.getOrderNumber())
+                            .id(new TestCaseStepId(savedTestStep.getId(), savedTestCase.getId(), testCaseStepDto.getOrderNumber()))
                             .build();
-
-                    return stepCaseRel;
                 }).collect(Collectors.toList());
-        List<StepCaseRel> savedStepsCaseRel = stepCaseRelRepository.saveAll(stepsCaseRel);
+        List<TestCaseStep> savedStepsCaseRel = stepCaseRelRepository.saveAll(stepsCaseRel);
 
         savedTestCase.getTestSteps().addAll(savedStepsCaseRel);
 
@@ -65,8 +62,13 @@ public class TestCaseService {
 
     @Transactional
     public TestCaseDto updateTestCase(TestCaseDto testCaseDto) {
+        List<Long> testStepsIds = testCaseDto.getSteps().stream()
+                .map(testCaseStepDto -> testCaseStepDto.getTestStep().getId())
+                .toList();
+
         TestCase testCase = testCaseRepository.findById(testCaseDto.getId()).orElseThrow(() -> {
-            String message = String.format("Cant update test case with id -%s, cause test case with this id  not found", testCaseDto.getId());
+            String message = String.format("Cant update test case with id -%s, cause test case with this id  not found",
+                    testCaseDto.getId());
             log.error(message);
             throw new TestCaseNotFoundException(message);
         });
@@ -76,31 +78,29 @@ public class TestCaseService {
         testCase.setPreconditions(newTestCase.getPreconditions());
         testCase.setProject(newTestCase.getProject());
 
-        List<StepCaseId> stepCaseIds = testCase.getTestSteps().stream()
-                .map(StepCaseRel::getId)
+        List<Long> orphanNonRepeatableStepIds = testCase.getTestSteps().stream()
+                .map(TestCaseStep::getTestStep)
+                .filter(testStep -> !testStep.getRepeatable())
+                .map(TestStep::getId)
+                .filter(id -> !testStepsIds.contains(id))
                 .collect(Collectors.toList());
-        stepCaseRelRepository.deleteAllByIdInBatch(stepCaseIds);
         testCase.removeAllTestSteps();
+        TestCase testCaseWithoutSteps = testCaseRepository.save(testCase);
 
-        List<StepCaseRel> stepsCaseRel = testCaseDto.getSteps().stream()
+        List<TestCaseStep> stepsCaseRel = testCaseDto.getSteps().stream()
                 .map(testCaseStepDto -> {
                     TestStepDto testStepDto = testCaseStepDto.getTestStep();
                     TestStep savedTestStep = testStepService.saveTestStep(testStepDto);
 
-                    StepCaseRel stepCaseRel = StepCaseRel.builder()
+                    return TestCaseStep.builder()
                             .testStep(savedTestStep)
-                            .testCase(testCase)
-                            .id(new StepCaseId(savedTestStep.getId(), testCase.getId()))
-                            .orderNumber(testCaseStepDto.getOrderNumber())
+                            .testCase(testCaseWithoutSteps)
+                            .id(new TestCaseStepId(savedTestStep.getId(), testCaseWithoutSteps.getId(), testCaseStepDto.getOrderNumber()))
                             .build();
-
-                    return stepCaseRel;
                 }).collect(Collectors.toList());
-        List<StepCaseRel> savedStepCasesRel = stepCaseRelRepository.saveAll(stepsCaseRel);
-
-        testCase.getTestSteps().addAll(savedStepCasesRel);
-        testCaseRepository.save(testCase);
-
-        return mapper.toDto(testCase);
+        List<TestCaseStep> savedStepCasesRel = stepCaseRelRepository.saveAll(stepsCaseRel);
+        testStepService.deleteAllById(orphanNonRepeatableStepIds);
+        testCaseWithoutSteps.getTestSteps().addAll(savedStepCasesRel);
+        return mapper.toDto(testCaseRepository.save(testCaseWithoutSteps));
     }
 }

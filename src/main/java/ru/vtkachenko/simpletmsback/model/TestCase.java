@@ -35,13 +35,16 @@ public class TestCase extends AbstractEntity {
     @ToString.Exclude
     private TestSuite parentSuite;
     @JsonManagedReference
-    @OneToMany(mappedBy = "testCase", orphanRemoval = true)
+    @OneToMany(mappedBy = "testCase", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default
-    private List<StepCaseRel> testSteps = new ArrayList<>();
+    private List<TestCaseStep> testSteps = new ArrayList<>();
 
     public void removeAllTestSteps() {
-        this.testSteps.forEach(stepCaseRel -> stepCaseRel.setTestCase(null));
+        this.testSteps.forEach(stepCaseRel -> {
+            stepCaseRel.setTestCase(null);
+            stepCaseRel.setTestStep(null);
+        });
         this.testSteps.clear();
     }
 

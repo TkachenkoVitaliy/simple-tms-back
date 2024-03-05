@@ -15,11 +15,13 @@ import java.util.Objects;
 @Getter
 @Setter
 @Embeddable
-public class StepCaseId implements Serializable {
-    @Column(name="test_step_id")
+public class TestCaseStepId implements Serializable {
+    @Column(name = "test_step_id")
     private Long testStepId;
-    @Column(name="test_case_id")
+    @Column(name = "test_case_id")
     private Long testCaseId;
+    @Column(name="order_number")
+    private Integer orderNumber;
 
     @Override
     public boolean equals(Object o) {
@@ -28,22 +30,23 @@ public class StepCaseId implements Serializable {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        StepCaseId that = (StepCaseId) o;
+        TestCaseStepId that = (TestCaseStepId) o;
         return Objects.equals(testStepId, that.testStepId) &&
-                Objects.equals(testCaseId, that.testCaseId);
+                Objects.equals(testCaseId, that.testCaseId) &&
+                Objects.equals(orderNumber, that.orderNumber);
     }
-
 
     @Override
     public String toString() {
-        return "StepCaseId{" +
+        return "TestCaseStepId{" +
                 "testStepId=" + testStepId +
                 ", testCaseId=" + testCaseId +
+                ", orderNumber=" + orderNumber +
                 '}';
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(testStepId, testCaseId);
+        return Objects.hash(testStepId, testCaseId, orderNumber);
     }
 }
