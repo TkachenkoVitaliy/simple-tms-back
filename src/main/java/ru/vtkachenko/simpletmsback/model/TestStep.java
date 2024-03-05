@@ -35,7 +35,7 @@ public class TestStep extends AbstractEntity {
     @ToString.Exclude
     private Project project;
     @JsonBackReference
-    @OneToMany(mappedBy = "testStep", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "testStep", orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default
     private List<StepCaseRel> testCases = new ArrayList<>();

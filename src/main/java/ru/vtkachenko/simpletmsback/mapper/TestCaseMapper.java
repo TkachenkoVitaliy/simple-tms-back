@@ -32,7 +32,7 @@ public class TestCaseMapper implements EntityMapper<TestCaseDto, TestCase> {
 
         return TestCaseDto.builder()
                 .id(entity.getId())
-                .parentSuiteId(entity.getParentSuite().getId())
+                .parentSuiteId(entity.getParentSuite() == null ? null : entity.getParentSuite().getId())
                 .name(entity.getName())
                 .preconditions(entity.getPreconditions())
                 .steps(testCaseSteps)

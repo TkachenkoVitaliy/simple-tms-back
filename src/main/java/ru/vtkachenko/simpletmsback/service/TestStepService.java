@@ -25,6 +25,10 @@ public class TestStepService {
         return null;
     }
 
+    public TestStep saveTestStep(TestStepDto testStepDto) {
+        return testStepRepository.save(mapper.toEntity(testStepDto));
+    }
+
     public List<TestStepDto> saveAllTestSteps(List<TestStepDto> testStepDtos) {
         List<TestStep> testSteps = testStepDtos.stream()
                 .map(mapper::toEntity)

@@ -21,14 +21,13 @@ public class TestCaseController {
     }
 
     @GetMapping("/{id}")
-    public TestCase getTestCase(@PathVariable Long id) {
+    public TestCaseDto getTestCase(@PathVariable Long id) {
         return testCaseService.getTestCase(id);
     }
 
     @PostMapping
-    public TestCase createTestCase(@Valid @RequestBody TestCaseDto testCaseDto) {
+    public TestCaseDto createTestCase(@Valid @RequestBody TestCaseDto testCaseDto) {
         log.info("Request [/api/v1/cases] method [POST] - createTestCase. Request body - [{}]", testCaseDto);
-        // TODO реализовать
-        return new TestCase();
+        return testCaseService.createTestCase(testCaseDto);
     }
 }
