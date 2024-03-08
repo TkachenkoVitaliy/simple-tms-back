@@ -15,7 +15,9 @@ import ru.vtkachenko.simpletmsback.model.TestStep;
 import ru.vtkachenko.simpletmsback.repository.StepCaseRelRepository;
 import ru.vtkachenko.simpletmsback.repository.TestCaseRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -75,6 +77,7 @@ public class TestCaseService {
             throw new TestCaseNotFoundException(message);
         });
 
+        // TODO вынести в отдельный метод маппера updateFromDto
         // Обновляем простые аттрибуты тест кейса
         TestCase newTestCase = mapper.toEntity(testCaseDto);
         testCase.setParentSuite(newTestCase.getParentSuite());
@@ -82,34 +85,54 @@ public class TestCaseService {
         testCase.setPreconditions(newTestCase.getPreconditions());
         testCase.setProject(newTestCase.getProject());
 
-        // Получаем список id тех testStep которые необходимо удалить т.к. они не переиспользуемые и больше не привязаны
-        // к тест кейсу который мы обновляем
-        List<Long> orphanNonRepeatableStepIds = testCase.getTestSteps().stream()
-                .map(TestCaseStep::getTestStep)
-                .filter(testStep -> !testStep.getRepeatable())
-                .map(TestStep::getId)
-                .filter(id -> !testStepsIds.contains(id))
-                .collect(Collectors.toList());
-        // Удаляем все старые testCaseSteps
-        testCase.removeAllTestSteps();
-        // Удаляем осиротевшие непереиспользуемые testSteps
-        testStepService.deleteAllById(orphanNonRepeatableStepIds);
+        // Получаем список id тех testStep которые необходимо удалить
+        List<Long> testStepsToRemoveIds = new ArrayList<>();
+        if (testCaseDto.getSteps() != null) {
+            testStepsToRemoveIds = testCase.getTestSteps().stream()
+                    .map(TestCaseStep::getTestStep)
+                    .map(TestStep::getId)
+                    .filter(id -> testCaseDto.getSteps().stream()
+                            .filter(stepDto -> stepDto.getTestStep() != null && stepDto.getTestStep().getId() != null)
+                            .noneMatch(stepDto -> stepDto.getTestStep().getId().equals(id)))
+                    .collect(Collectors.toList());
+        }
 
-        // Создаем новые testCaseSteps
-        List<TestCaseStep> testCaseSteps = testCaseDto.getSteps().stream()
-                .map(testCaseStepDto -> {
-                    TestStepDto testStepDto = testCaseStepDto.getTestStep();
-                    TestStep savedTestStep = testStepService.saveTestStep(testStepDto);
+        List<Long> removableIds = testStepsToRemoveIds;
+
+        // Удаляем лишние TestCaseSteps
+        testCase.getTestSteps().removeIf(step -> removableIds.contains(step.getTestStep().getId()));
+
+        // Новые TestCaseSteps
+        List<TestCaseStep> newTestCaseSteps = testCaseDto.getSteps().stream()
+                .filter(stepDto -> stepDto.getTestStep().getId() == null) // Only new TestSteps
+                .map(stepDto -> {
+                    TestStep savedTestStep = testStepService.saveTestStep(stepDto.getTestStep());
 
                     return TestCaseStep.builder()
                             .testStep(savedTestStep)
                             .testCase(testCase)
-                            .id(new TestCaseStepId(savedTestStep.getId(), testCase.getId(), testCaseStepDto.getOrderNumber()))
+                            .id(new TestCaseStepId(savedTestStep.getId(), testCase.getId(), stepDto.getOrderNumber()))
                             .build();
-                }).collect(Collectors.toList());
-        // Добавляем новые созданные testCaseSteps в entity TestCase
-        testCase.getTestSteps().addAll(testCaseSteps);
+                })
+                .collect(Collectors.toList());
+
+        testCase.getTestSteps().addAll(newTestCaseSteps);
+
         // Возвращаем результат
         return mapper.toDto(testCaseRepository.save(testCase));/*testCaseWithoutSteps));*/
+    }
+
+    @Transactional
+    public void deleteTestCase(Long id) {
+        Optional<TestCase> testCaseById = testCaseRepository.getTestCaseById(id);
+        if (testCaseById.isPresent()) {
+            TestCase testCase = testCaseById.get();
+            List<Long> testStepIdsForDelete = testCase.getTestSteps().stream()
+                    .filter(testCaseStep -> !testCaseStep.getTestStep().getRepeatable())
+                    .map(testCaseStep -> testCaseStep.getTestStep().getId())
+                    .collect(Collectors.toList());
+            testCaseRepository.delete(testCase);
+            testStepService.deleteAllById(testStepIdsForDelete);
+        }
     }
 }
