@@ -81,6 +81,8 @@ public class TestCaseService {
         // Обновляем простые аттрибуты тест кейса
         TestCase newTestCase = mapper.toEntity(testCaseDto);
         testCase.setParentSuite(newTestCase.getParentSuite());
+        testCase.setType(newTestCase.getType());
+        testCase.setPriority(newTestCase.getPriority());
         testCase.setName(newTestCase.getName());
         testCase.setPreconditions(newTestCase.getPreconditions());
         testCase.setProject(newTestCase.getProject());

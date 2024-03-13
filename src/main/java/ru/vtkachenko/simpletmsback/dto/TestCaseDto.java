@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
+import ru.vtkachenko.simpletmsback.model.enums.CasePriority;
+import ru.vtkachenko.simpletmsback.model.enums.CaseType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,10 @@ public class TestCaseDto {
     private Long parentSuiteId;
     @NotNull
     private String name;
+    @NotNull
+    private CaseType type;
+    @NotNull
+    private CasePriority priority;
     private String preconditions;
     @JsonProperty("testSteps")
     @Builder.Default

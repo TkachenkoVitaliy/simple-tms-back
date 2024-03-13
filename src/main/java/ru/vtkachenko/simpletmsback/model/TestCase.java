@@ -8,6 +8,8 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.ColumnDefault;
+import ru.vtkachenko.simpletmsback.model.enums.CasePriority;
+import ru.vtkachenko.simpletmsback.model.enums.CaseType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +33,14 @@ import java.util.Objects;
 public class TestCase extends AbstractEntity {
     @NotNull
     private String name;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private CaseType type;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private CasePriority priority;
     @ColumnDefault("")
     private String preconditions;
-
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
