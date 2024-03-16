@@ -8,6 +8,7 @@ import ru.vtkachenko.simpletmsback.service.ProjectService;
 import ru.vtkachenko.simpletmsback.service.TestSuiteService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class TestCaseMapper implements EntityMapper<TestCaseDto, TestCase> {
@@ -28,7 +29,7 @@ public class TestCaseMapper implements EntityMapper<TestCaseDto, TestCase> {
                         .orderNumber(stepCaseRel.getId().getOrderNumber())
                         .testStep(testStepMapper.toDto(stepCaseRel.getTestStep()))
                         .build())
-                .toList();
+                .collect(Collectors.toList());
 
         return TestCaseDto.builder()
                 .id(entity.getId())

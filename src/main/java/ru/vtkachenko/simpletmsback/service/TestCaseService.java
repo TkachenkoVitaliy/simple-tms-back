@@ -5,18 +5,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vtkachenko.simpletmsback.dto.TestCaseDto;
+import ru.vtkachenko.simpletmsback.dto.TestCaseStepDto;
 import ru.vtkachenko.simpletmsback.dto.TestStepDto;
 import ru.vtkachenko.simpletmsback.exception.business.TestCaseNotFoundException;
 import ru.vtkachenko.simpletmsback.mapper.TestCaseMapper;
-import ru.vtkachenko.simpletmsback.model.TestCaseStepId;
-import ru.vtkachenko.simpletmsback.model.TestCaseStep;
 import ru.vtkachenko.simpletmsback.model.TestCase;
+import ru.vtkachenko.simpletmsback.model.TestCaseStep;
+import ru.vtkachenko.simpletmsback.model.TestCaseStepId;
 import ru.vtkachenko.simpletmsback.model.TestStep;
 import ru.vtkachenko.simpletmsback.repository.StepCaseRelRepository;
 import ru.vtkachenko.simpletmsback.repository.TestCaseRepository;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -64,12 +68,21 @@ public class TestCaseService {
 
     @Transactional
     public TestCaseDto updateTestCase(TestCaseDto testCaseDto) {
-        // Получаем список id testStep которые получили от клиента
+        // Получаем список id testStep которые получили от клиента и не равны null
         List<Long> testStepsIds = testCaseDto.getSteps().stream()
+                .filter(testCaseStepDto -> testCaseStepDto.getTestStep().getId() != null)
                 .map(testCaseStepDto -> testCaseStepDto.getTestStep().getId())
                 .toList();
 
-        // Получаем тест кейс с его зависимости через left join
+        // Получаем шаги тест кейса из dto
+        Map<TestCaseStepId, Long> steps = new HashMap<>();
+        testCaseDto.getSteps()
+                .forEach(step -> steps.put(
+                        new TestCaseStepId(step.getTestStep().getId(), testCaseDto.getId(), step.getOrderNumber()),
+                        step.getTestStep().getId()
+                ));
+
+        // Получаем тест кейс из базы данных с его зависимости через left join
         TestCase testCase = testCaseRepository.getTestCaseById(testCaseDto.getId()).orElseThrow(() -> {
             String message = String.format("Cant update test case with id -%s, cause test case with this id  not found",
                     testCaseDto.getId());
@@ -87,22 +100,28 @@ public class TestCaseService {
         testCase.setPreconditions(newTestCase.getPreconditions());
         testCase.setProject(newTestCase.getProject());
 
-        // Получаем список id тех testStep которые необходимо удалить
+        // Получаем список id тех testStep которые потом нужно будет удалить
         List<Long> testStepsToRemoveIds = new ArrayList<>();
         if (testCaseDto.getSteps() != null) {
             testStepsToRemoveIds = testCase.getTestSteps().stream()
                     .map(TestCaseStep::getTestStep)
                     .map(TestStep::getId)
-                    .filter(id -> testCaseDto.getSteps().stream()
-                            .filter(stepDto -> stepDto.getTestStep() != null && stepDto.getTestStep().getId() != null)
-                            .noneMatch(stepDto -> stepDto.getTestStep().getId().equals(id)))
+                    .filter(id -> !testStepsIds.contains(id))
                     .collect(Collectors.toList());
         }
 
-        List<Long> removableIds = testStepsToRemoveIds;
+        // Удаляем шаги тест кейса которые отсутствуют в dto
+        testCase.getTestSteps().removeIf(step -> !steps.containsKey(step.getId()));
 
-        // Удаляем лишние TestCaseSteps
-        testCase.getTestSteps().removeIf(step -> removableIds.contains(step.getTestStep().getId()));
+        // Удаляем testSteps которые больше не используются в этом кейсе и не являются переиспользуемыми
+        if (!testStepsToRemoveIds.isEmpty()) {
+            testStepService.deleteAllById(testStepsToRemoveIds);
+        }
+
+        List<Integer> persistedOrderNumbers = testCase.getTestSteps().stream()
+                .map(step -> step.getId().getOrderNumber())
+                .toList();
+
 
         // Обновляем предыдущие
         testCaseDto.getSteps().stream()
@@ -111,7 +130,7 @@ public class TestCaseService {
 
         // Новые TestCaseSteps
         List<TestCaseStep> newTestCaseSteps = testCaseDto.getSteps().stream()
-                .filter(stepDto -> stepDto.getTestStep().getId() == null) // Only new TestSteps
+                .filter(stepDto -> !persistedOrderNumbers.contains(stepDto.getOrderNumber())) // Only new TestSteps
                 .map(stepDto -> {
                     TestStep savedTestStep = testStepService.saveTestStep(stepDto.getTestStep());
 
@@ -125,8 +144,11 @@ public class TestCaseService {
 
         testCase.getTestSteps().addAll(newTestCaseSteps);
 
+        TestCaseDto savedTestCaseDto = mapper.toDto(testCaseRepository.save(testCase));
+        // Упорядочиваем testCaseStep по их orderNumber
+        savedTestCaseDto.getSteps().sort(Comparator.comparingInt(TestCaseStepDto::getOrderNumber));
         // Возвращаем результат
-        return mapper.toDto(testCaseRepository.save(testCase));/*testCaseWithoutSteps));*/
+        return savedTestCaseDto;
     }
 
     @Transactional
