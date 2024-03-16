@@ -104,6 +104,11 @@ public class TestCaseService {
         // Удаляем лишние TestCaseSteps
         testCase.getTestSteps().removeIf(step -> removableIds.contains(step.getTestStep().getId()));
 
+        // Обновляем предыдущие
+        testCaseDto.getSteps().stream()
+                .filter(stepDto -> stepDto.getTestStep().getId() != null)
+                .forEach(stepDto -> testStepService.saveTestStep(stepDto.getTestStep()));
+
         // Новые TestCaseSteps
         List<TestCaseStep> newTestCaseSteps = testCaseDto.getSteps().stream()
                 .filter(stepDto -> stepDto.getTestStep().getId() == null) // Only new TestSteps
