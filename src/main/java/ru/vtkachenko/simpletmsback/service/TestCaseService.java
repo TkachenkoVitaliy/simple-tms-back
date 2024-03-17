@@ -105,6 +105,7 @@ public class TestCaseService {
         if (testCaseDto.getSteps() != null) {
             testStepsToRemoveIds = testCase.getTestSteps().stream()
                     .map(TestCaseStep::getTestStep)
+                    .filter(testStep -> !testStep.getRepeatable())
                     .map(TestStep::getId)
                     .filter(id -> !testStepsIds.contains(id))
                     .collect(Collectors.toList());
