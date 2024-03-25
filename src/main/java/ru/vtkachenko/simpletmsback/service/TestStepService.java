@@ -2,6 +2,7 @@ package ru.vtkachenko.simpletmsback.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.vtkachenko.simpletmsback.dto.TestStepDto;
 import ru.vtkachenko.simpletmsback.mapper.TestStepMapper;
@@ -29,6 +30,13 @@ public class TestStepService {
                 .collect(Collectors.toList());
         List<TestStep> savedTestSteps = testStepRepository.saveAll(testSteps);
         return savedTestSteps.stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<TestStepDto> getRepeatableSteps(Integer offset, Integer limit) {
+        List<TestStep> repeatableSteps = testStepRepository.findAllByRepeatableIsTrue(PageRequest.of(offset, limit));
+        return repeatableSteps.stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
