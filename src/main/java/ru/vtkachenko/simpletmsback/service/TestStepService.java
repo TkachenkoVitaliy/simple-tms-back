@@ -2,9 +2,11 @@ package ru.vtkachenko.simpletmsback.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.vtkachenko.simpletmsback.dto.TestStepDto;
+import ru.vtkachenko.simpletmsback.dto.response.TestStepsPageDto;
 import ru.vtkachenko.simpletmsback.mapper.TestStepMapper;
 import ru.vtkachenko.simpletmsback.model.TestStep;
 import ru.vtkachenko.simpletmsback.repository.TestStepRepository;
@@ -34,11 +36,16 @@ public class TestStepService {
                 .collect(Collectors.toList());
     }
 
-    public List<TestStepDto> getRepeatableSteps(Integer offset, Integer limit) {
-        List<TestStep> repeatableSteps = testStepRepository.findAllByRepeatableIsTrue(PageRequest.of(offset, limit));
-        return repeatableSteps.stream()
+    public TestStepsPageDto getRepeatableSteps(Integer offset, Integer limit) {
+        Page<TestStep> testStepsPage = testStepRepository.findAllByRepeatableIsTrue(PageRequest.of(offset, limit));
+        List<TestStepDto> testSteps = testStepsPage.getContent().stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
+
+        return TestStepsPageDto.builder()
+                .totalCount(testStepsPage.getTotalElements())
+                .data(testSteps)
+                .build();
     }
 
     public void deleteAllById(List<Long> ids) {
