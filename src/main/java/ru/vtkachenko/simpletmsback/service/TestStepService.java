@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.vtkachenko.simpletmsback.dto.TestStepDto;
-import ru.vtkachenko.simpletmsback.dto.response.TestStepsPageDto;
+import ru.vtkachenko.simpletmsback.dto.response.PageDto;
 import ru.vtkachenko.simpletmsback.mapper.TestStepMapper;
 import ru.vtkachenko.simpletmsback.model.TestStep;
 import ru.vtkachenko.simpletmsback.repository.TestStepRepository;
@@ -36,16 +36,13 @@ public class TestStepService {
                 .collect(Collectors.toList());
     }
 
-    public TestStepsPageDto getRepeatableSteps(Integer offset, Integer limit) {
+    public PageDto<TestStepDto> getRepeatableSteps(Integer offset, Integer limit) {
         Page<TestStep> testStepsPage = testStepRepository.findAllByRepeatableIsTrue(PageRequest.of(offset, limit));
         List<TestStepDto> testSteps = testStepsPage.getContent().stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
 
-        return TestStepsPageDto.builder()
-                .totalCount(testStepsPage.getTotalElements())
-                .data(testSteps)
-                .build();
+        return new PageDto<>(testStepsPage.getTotalElements(), testSteps);
     }
 
     public void deleteAllById(List<Long> ids) {
