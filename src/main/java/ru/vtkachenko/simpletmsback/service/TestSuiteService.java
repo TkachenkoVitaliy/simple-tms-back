@@ -14,6 +14,7 @@ import ru.vtkachenko.simpletmsback.model.TestSuite;
 import ru.vtkachenko.simpletmsback.repository.TestSuiteRepository;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -51,12 +52,17 @@ public class TestSuiteService {
         ).toList();
     }
 
-    public TestSuiteDto getTestSuiteById(Long id) {
+    public TestSuiteDto getTestSuiteById(Long projectId, Long id) {
         TestSuite testSuite = testSuiteRepository.findById(id).orElseThrow(() -> {
             String message = String.format("Cant find test suite with id - %s", id);
             log.error(message);
             throw new TestSuiteNotFoundException(message);
         });
+        if (!Objects.equals(testSuite.getProject().getId(), projectId)) {
+            String message = String.format("Cant find test suite with id - %s in project with id -- %s", id, projectId);
+            log.error(message);
+            throw new TestSuiteNotFoundException(message);
+        }
         return mapper.toDto(testSuite);
     }
 

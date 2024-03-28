@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @CrossOrigin("*")
-@RequestMapping(value = "/api/v1/suites", produces = "application/json")
+@RequestMapping(value = "/api/v1/projects/{projectId}/suites", produces = "application/json")
 public class TestSuiteController {
     private final TestSuiteService testSuiteService;
 
@@ -25,16 +25,16 @@ public class TestSuiteController {
 
     // TODO возможно стоит убрать метод
     @GetMapping
-    public List<TestSuiteShortDto> getProjectShortTestSuites(@RequestParam Long projectId) {
+    public List<TestSuiteShortDto> getProjectShortTestSuites(@PathVariable Long projectId) {
         log.info("Request [/api/v1/suites] method [GET] - getProjectShortTestSuites. Request param - [projectId={}]",
                 projectId);
         return testSuiteService.getShortTestSuites(projectId);
     }
 
     @GetMapping("/{id}")
-    public TestSuiteDto getTestSuiteById(@PathVariable Long id) {
+    public TestSuiteDto getTestSuiteById(@PathVariable Long projectId, @PathVariable Long id) {
         log.info("Request [/api/v1/suites/{}] method [GET] - getTestSuiteById.", id);
-        return testSuiteService.getTestSuiteById(id);
+        return testSuiteService.getTestSuiteById(projectId, id);
     }
 
     @PostMapping
