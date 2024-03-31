@@ -21,7 +21,7 @@ public class TestStepController {
 
     @GetMapping
     public PageDto<TestStepDto> getRepeatableTestSteps(@RequestParam Integer page, @RequestParam Integer pageSize) {
-        log.info("Request [/api/v1/steps/?page={}&pageSize={}] method [GET] - getRepeatableTestSteps", page, pageSize);
+        log.info("Request [/api/v1/steps?page={}&pageSize={}] method [GET] - getRepeatableTestSteps", page, pageSize);
         return testStepService.getRepeatableSteps(page, pageSize);
     }
 }
