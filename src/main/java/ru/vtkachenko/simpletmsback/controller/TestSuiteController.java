@@ -51,9 +51,9 @@ public class TestSuiteController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTestSuite(@PathVariable Long id) {
+    public void deleteTestSuite(@PathVariable Long projectId, @PathVariable Long id) {
         log.info("Request [/api/v1/suites/{}] method [DELETE] - deleteTestSuite", id );
-        testSuiteService.deleteTestSuite(id);
+        testSuiteService.deleteTestSuite(projectId, id);
     }
 
 }
