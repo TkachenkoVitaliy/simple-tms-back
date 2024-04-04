@@ -24,7 +24,7 @@ public class Project extends AbstractEntity {
 
     @NotNull
     private String name;
-    @ColumnDefault("")
+    @ColumnDefault("''")
     private String description;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -23,7 +23,7 @@ public class TestSuite extends AbstractEntity {
 
     @NotNull
     private String name;
-    @ColumnDefault("")
+    @ColumnDefault("''")
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)

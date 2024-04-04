@@ -24,7 +24,7 @@ import org.hibernate.annotations.ColumnDefault;
 public class TestPlan extends AbstractEntity {
     @NotNull
     private String name;
-    @ColumnDefault("")
+    @ColumnDefault("''")
     private String description;
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)

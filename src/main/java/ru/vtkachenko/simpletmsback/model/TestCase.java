@@ -39,7 +39,7 @@ public class TestCase extends AbstractEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private CasePriority priority;
-    @ColumnDefault("")
+    @ColumnDefault("''")
     private String preconditions;
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
