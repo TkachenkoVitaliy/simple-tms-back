@@ -12,8 +12,10 @@ import ru.vtkachenko.simpletmsback.model.enums.CasePriority;
 import ru.vtkachenko.simpletmsback.model.enums.CaseType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -54,6 +56,8 @@ public class TestCase extends AbstractEntity {
     @ToString.Exclude
     @Builder.Default
     private List<TestCaseStep> testSteps = new ArrayList<>();
+    @ManyToMany
+    private Set<TestPlan> testPlans = new HashSet<>();
 
     public void removeAllTestSteps() {
         this.testSteps.forEach(stepCaseRel -> {
