@@ -38,7 +38,7 @@ public class TestCaseService {
         TestCase testCase = testCaseRepository.getTestCaseById(id).orElseThrow(() -> {
             String message = String.format("Cant find test case with id - %s", id);
             log.error(message);
-            throw new TestCaseNotFoundException(message);
+            return new TestCaseNotFoundException(message);
         });
         return mapper.toDto(testCase);
     }
@@ -87,7 +87,7 @@ public class TestCaseService {
             String message = String.format("Cant update test case with id -%s, cause test case with this id  not found",
                     testCaseDto.getId());
             log.error(message);
-            throw new TestCaseNotFoundException(message);
+            return new TestCaseNotFoundException(message);
         });
 
         // TODO вынести в отдельный метод маппера updateFromDto
@@ -141,7 +141,7 @@ public class TestCaseService {
                             .id(new TestCaseStepId(savedTestStep.getId(), testCase.getId(), stepDto.getOrderNumber()))
                             .build();
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         testCase.getTestSteps().addAll(newTestCaseSteps);
 

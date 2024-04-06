@@ -44,9 +44,9 @@ public class TestSuiteController {
     }
 
     @PutMapping
-    public TestSuiteDto updateTestSuite(@Valid @RequestBody TestSuiteDto testSuiteDto) {
+    public TestSuiteDto updateTestSuite(@PathVariable Long projectId, @Valid @RequestBody TestSuiteDto testSuiteDto) {
         log.info("Request [/api/v1/suites] method [PUT] - updateTestSuite. Request body - [{}]", testSuiteDto);
-        return testSuiteService.updateTestSuite(testSuiteDto);
+        return testSuiteService.updateTestSuite(projectId, testSuiteDto);
     }
 
     @DeleteMapping("/{id}")

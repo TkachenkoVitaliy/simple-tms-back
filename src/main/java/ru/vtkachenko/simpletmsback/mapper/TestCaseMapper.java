@@ -1,5 +1,6 @@
 package ru.vtkachenko.simpletmsback.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.vtkachenko.simpletmsback.dto.TestCaseDto;
 import ru.vtkachenko.simpletmsback.dto.TestCaseStepDto;
@@ -11,16 +12,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class TestCaseMapper implements EntityMapper<TestCaseDto, TestCase> {
     private final ProjectService projectService;
     private final TestSuiteService testSuiteService;
     private final TestStepMapper testStepMapper;
 
-    public TestCaseMapper(ProjectService projectService, TestSuiteService testSuiteService, TestStepMapper testStepMapper) {
-        this.projectService = projectService;
-        this.testSuiteService = testSuiteService;
-        this.testStepMapper = testStepMapper;
-    }
 
     @Override
     public TestCaseDto toDto(TestCase entity) {

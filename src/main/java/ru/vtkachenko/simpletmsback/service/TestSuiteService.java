@@ -1,9 +1,8 @@
 package ru.vtkachenko.simpletmsback.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vtkachenko.simpletmsback.dto.TestSuiteDto;
@@ -18,16 +17,12 @@ import java.util.Objects;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class TestSuiteService {
 
     private final TestSuiteRepository testSuiteRepository;
-    private final TestSuiteMapper mapper;
+    private final TestSuiteMapper testSuiteMapper;
 
-    @Autowired
-    public TestSuiteService(TestSuiteRepository testSuiteRepository, @Lazy TestSuiteMapper mapper) {
-        this.testSuiteRepository = testSuiteRepository;
-        this.mapper = mapper;
-    }
 
     public TestSuite getTestSuiteReferenceById(Long testSuiteId) {
         if (testSuiteId == null) {
@@ -53,51 +48,43 @@ public class TestSuiteService {
     }
 
     public TestSuiteDto getTestSuiteById(Long projectId, Long id) {
-        TestSuite testSuite = testSuiteRepository.findById(id).orElseThrow(() -> {
-            String message = String.format("Cant find test suite with id - %s", id);
-            log.error(message);
-            throw new TestSuiteNotFoundException(message);
-        });
-        if (!Objects.equals(testSuite.getProject().getId(), projectId)) {
-            String message = String.format("Cant find test suite with id - %s in project with id -- %s", id, projectId);
-            log.error(message);
-            throw new TestSuiteNotFoundException(message);
-        }
-        return mapper.toDto(testSuite);
+        TestSuite testSuite = findTestSuiteById(projectId, id);
+        return testSuiteMapper.toDto(testSuite);
     }
 
     @Transactional
     public TestSuiteDto createTestSuite(TestSuiteDto testSuiteDto) {
-        TestSuite testSuite = mapper.toEntity(testSuiteDto);
+        TestSuite testSuite = testSuiteMapper.toEntity(testSuiteDto);
         testSuite = testSuiteRepository.save(testSuite);
-        return mapper.toDto(testSuite);
+        return testSuiteMapper.toDto(testSuite);
     }
 
     @Transactional
-    public TestSuiteDto updateTestSuite(TestSuiteDto testSuiteDto) {
-        TestSuite testSuite = testSuiteRepository.findById(testSuiteDto.getId()).orElseThrow(() -> {
-            String message = String.format("Cant update test suite with id - %s, cause test suite with this id not found", testSuiteDto.getId());
-            log.error(message);
-            throw new TestSuiteNotFoundException(message);
-        });
+    public TestSuiteDto updateTestSuite(Long projectId, TestSuiteDto testSuiteDto) {
+        TestSuite testSuite = findTestSuiteById(projectId, testSuiteDto.getId());
         testSuite.setParentSuite(getTestSuiteReferenceById(testSuiteDto.getParentSuiteId()));
         testSuite.setName(testSuiteDto.getName());
         testSuite.setDescription(testSuiteDto.getDescription());
-        return mapper.toDto(testSuite);
+        return testSuiteMapper.toDto(testSuite);
     }
 
     @Transactional
     public void deleteTestSuite(Long projectId, Long id) {
+        TestSuite testSuite = findTestSuiteById(projectId, id);
+        testSuiteRepository.delete(testSuite);
+    }
+
+    private TestSuite findTestSuiteById(Long projectId, Long id) {
         TestSuite testSuite = testSuiteRepository.findById(id).orElseThrow(() -> {
             String message = String.format("Cant find test suite with id - %s", id);
             log.error(message);
-            throw new TestSuiteNotFoundException(message);
+            return new TestSuiteNotFoundException(message);
         });
         if (!Objects.equals(testSuite.getProject().getId(), projectId)) {
             String message = String.format("Cant find test suite with id - %s in project with id -- %s", id, projectId);
             log.error(message);
             throw new TestSuiteNotFoundException(message);
         }
-        testSuiteRepository.delete(testSuite);
+        return testSuite;
     }
 }

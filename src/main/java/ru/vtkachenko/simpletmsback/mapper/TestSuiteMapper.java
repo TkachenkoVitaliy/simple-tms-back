@@ -1,5 +1,6 @@
 package ru.vtkachenko.simpletmsback.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.vtkachenko.simpletmsback.dto.TestSuiteDto;
 import ru.vtkachenko.simpletmsback.model.TestSuite;
@@ -7,14 +8,10 @@ import ru.vtkachenko.simpletmsback.service.ProjectService;
 import ru.vtkachenko.simpletmsback.service.TestSuiteService;
 
 @Component
+@RequiredArgsConstructor
 public class TestSuiteMapper implements EntityMapper<TestSuiteDto, TestSuite> {
     private final ProjectService projectService;
     private final TestSuiteService testSuiteService;
-
-    public TestSuiteMapper(ProjectService projectService, TestSuiteService testSuiteService) {
-        this.projectService = projectService;
-        this.testSuiteService = testSuiteService;
-    }
 
     @Override
     public TestSuiteDto toDto(TestSuite entity) {

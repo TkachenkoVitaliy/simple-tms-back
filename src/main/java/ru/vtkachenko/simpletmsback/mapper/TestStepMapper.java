@@ -1,17 +1,15 @@
 package ru.vtkachenko.simpletmsback.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.vtkachenko.simpletmsback.dto.TestStepDto;
 import ru.vtkachenko.simpletmsback.model.TestStep;
 import ru.vtkachenko.simpletmsback.service.ProjectService;
 
 @Component
+@RequiredArgsConstructor
 public class TestStepMapper implements EntityMapper<TestStepDto, TestStep> {
     private final ProjectService projectService;
-
-    public TestStepMapper(ProjectService projectService) {
-        this.projectService = projectService;
-    }
 
     @Override
     public TestStepDto toDto(TestStep entity) {

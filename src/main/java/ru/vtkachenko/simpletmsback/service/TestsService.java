@@ -1,13 +1,12 @@
 package ru.vtkachenko.simpletmsback.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vtkachenko.simpletmsback.constant.TestsTreeNodeType;
 import ru.vtkachenko.simpletmsback.dto.TestsTreeNodeDto;
 import ru.vtkachenko.simpletmsback.dto.request.TestsTreeNodeUpdateParentDto;
-import ru.vtkachenko.simpletmsback.model.Project;
 import ru.vtkachenko.simpletmsback.model.TestCase;
 import ru.vtkachenko.simpletmsback.model.TestSuite;
 import ru.vtkachenko.simpletmsback.repository.TestCaseRepository;
@@ -17,16 +16,12 @@ import java.util.*;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class TestsService {
     private final TestSuiteRepository testSuiteRepository;
     private final TestCaseRepository testCaseRepository;
 
     // TODO переделать на использование сервисов
-    @Autowired
-    public TestsService(TestSuiteRepository testSuiteRepository, TestCaseRepository testCaseRepository) {
-        this.testSuiteRepository = testSuiteRepository;
-        this.testCaseRepository = testCaseRepository;
-    }
 
 
     @Transactional
@@ -41,6 +36,7 @@ public class TestsService {
 
         Map<String, List<String>> nodeChildren = new HashMap<>();
 
+        // TODO вынести в методы
         testSuites.forEach(testSuite -> {
             String parentSyntheticId = testSuite.getParentSuite() == null ? null : SUITE + testSuite.getParentSuite().getId();
             List<String> children = nodeChildren.computeIfAbsent(parentSyntheticId, k -> new ArrayList<>());
