@@ -14,6 +14,8 @@ public class TestPlanDto {
     private Long id;
     @NotNull
     private Long projectId;
+    @NotNull
+    private String name;
     private String description;
     @Builder.Default
     private Set<TestCaseShortDto> testCases = new HashSet<>();
