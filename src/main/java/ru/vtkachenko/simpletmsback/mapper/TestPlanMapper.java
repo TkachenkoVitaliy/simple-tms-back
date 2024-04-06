@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class TestPlanMapper implements EntityMapper<TestPlanDto, TestPlan> {
     private final ProjectService projectService;
     private final TestCaseShortMapper testCaseShortMapper;
+
     @Override
     public TestPlanDto toDto(TestPlan entity) {
         Set<TestCaseShortDto> testCasesShortDto = entity.getTestCases().stream()
