@@ -1,8 +1,8 @@
 package ru.vtkachenko.simpletmsback.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vtkachenko.simpletmsback.dto.TestSuiteDto;
@@ -17,11 +17,15 @@ import java.util.Objects;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class TestSuiteService {
 
     private final TestSuiteRepository testSuiteRepository;
     private final TestSuiteMapper testSuiteMapper;
+
+    public TestSuiteService(TestSuiteRepository testSuiteRepository, @Lazy TestSuiteMapper testSuiteMapper) {
+        this.testSuiteRepository = testSuiteRepository;
+        this.testSuiteMapper = testSuiteMapper;
+    }
 
 
     public TestSuite getTestSuiteReferenceById(Long testSuiteId) {
