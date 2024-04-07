@@ -33,6 +33,10 @@ public class TestCaseService {
     private final TestCaseMapper mapper;
     private final TestStepService testStepService;
 
+    public List<TestCase> getTestCasesByIds(List<Long> ids) {
+        return testCaseRepository.findAllById(ids);
+    }
+
 
     public TestCaseDto getTestCase(Long id) {
         TestCase testCase = testCaseRepository.getTestCaseById(id).orElseThrow(() -> {

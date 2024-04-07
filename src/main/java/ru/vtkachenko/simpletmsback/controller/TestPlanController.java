@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.vtkachenko.simpletmsback.dto.TestPlanDto;
 import ru.vtkachenko.simpletmsback.service.TestPlanService;
@@ -35,5 +36,19 @@ public class TestPlanController {
         log.info("Request [/api/v1/projects/{}/plans] method [POST] - createTestPlan. Request body - [{}]",
                 projectId, testPlanDto);
         return testPlanService.createTestPlan(projectId, testPlanDto);
+    }
+
+    @PutMapping
+    public TestPlanDto updateTestSuite(@PathVariable Long projectId, @Valid @RequestBody TestPlanDto testPlanDto) {
+        log.info("Request [/api/v1/projects/{}/plans] method [PUT] - updateTestSuite. Request body - [{}]",
+                projectId, testPlanDto);
+        return testPlanService.updateTestSuite(projectId, testPlanDto);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTestPlan(@PathVariable Long projectId, @PathVariable Long id) {
+        log.info("Request [/api/v1/projects/{}/plans/{}] method [DELETE] - deleteTestPlan", projectId, id);
+        testPlanService.deleteTestPlan(projectId, id);
     }
 }
