@@ -3,7 +3,7 @@ package ru.vtkachenko.simpletmsback.exception.business;
 import org.springframework.http.HttpStatus;
 
 public class TestCaseNotFoundException extends BusinessException {
-    private static final int CODE = 3_00_404;
+    private static final int CODE = 4_00_404;
     private static final String MESSAGE_CODE = "not_found_test_case";
     private static final HttpStatus STATUS_CODE = HttpStatus.NOT_FOUND;
 
