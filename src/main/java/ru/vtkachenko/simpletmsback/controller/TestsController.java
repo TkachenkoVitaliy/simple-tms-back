@@ -1,5 +1,6 @@
 package ru.vtkachenko.simpletmsback.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +14,9 @@ import java.util.List;
 @RestController
 @CrossOrigin("*")
 @RequestMapping(value = "/api/v1/tests", produces = "application/json")
+@RequiredArgsConstructor
 public class TestsController {
     private final TestsService testsService;
-
-    @Autowired
-    public TestsController(TestsService testsService) {
-        this.testsService = testsService;
-    }
 
     @GetMapping("/{id}")
     public List<TestsTreeNodeDto> getProjectTestsTree(@PathVariable Long id) {

@@ -1,6 +1,7 @@
 package ru.vtkachenko.simpletmsback.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,13 +14,9 @@ import ru.vtkachenko.simpletmsback.service.TestCaseService;
 @RestController
 @CrossOrigin("*")
 @RequestMapping(value = "/api/v1/cases", produces = "application/json")
+@RequiredArgsConstructor
 public class TestCaseController {
     private final TestCaseService testCaseService;
-
-    @Autowired
-    public TestCaseController(TestCaseService testCaseService) {
-        this.testCaseService = testCaseService;
-    }
 
     @GetMapping("/{id}")
     public TestCaseDto getTestCaseById(@PathVariable Long id) {

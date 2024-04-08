@@ -1,6 +1,7 @@
 package ru.vtkachenko.simpletmsback.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,13 +15,9 @@ import java.util.List;
 @RestController
 @CrossOrigin("*")
 @RequestMapping(value = "/api/v1/projects", produces = "application/json")
+@RequiredArgsConstructor
 public class ProjectController {
     private final ProjectService projectService;
-
-    @Autowired
-    public ProjectController(ProjectService projectService) {
-        this.projectService = projectService;
-    }
 
     @GetMapping
     public List<ProjectDto> getAllProjects() {

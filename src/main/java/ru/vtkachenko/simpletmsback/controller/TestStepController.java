@@ -1,5 +1,6 @@
 package ru.vtkachenko.simpletmsback.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +12,9 @@ import ru.vtkachenko.simpletmsback.service.TestStepService;
 @RestController
 @CrossOrigin("*")
 @RequestMapping(value = "/api/v1/steps", produces = "application/json")
+@RequiredArgsConstructor
 public class TestStepController {
     private final TestStepService testStepService;
-
-    @Autowired
-    public TestStepController(TestStepService testStepService) {
-        this.testStepService = testStepService;
-    }
 
     @GetMapping
     public PageDto<TestStepDto> getRepeatableTestSteps(@RequestParam Integer page, @RequestParam Integer pageSize) {
