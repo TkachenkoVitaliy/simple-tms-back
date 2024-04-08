@@ -12,7 +12,6 @@ import ru.vtkachenko.simpletmsback.exception.enums.ErrorEntity;
 import ru.vtkachenko.simpletmsback.mapper.TestPlanMapper;
 import ru.vtkachenko.simpletmsback.model.TestCase;
 import ru.vtkachenko.simpletmsback.model.TestPlan;
-import ru.vtkachenko.simpletmsback.model.TestSuite;
 import ru.vtkachenko.simpletmsback.repository.TestPlanRepository;
 
 import java.util.List;

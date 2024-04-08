@@ -1,6 +1,7 @@
 package ru.vtkachenko.simpletmsback.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,44 +16,42 @@ import java.util.List;
 @RestController
 @CrossOrigin("*")
 @RequestMapping(value = "/api/v1/projects/{projectId}/suites", produces = "application/json")
+@RequiredArgsConstructor
 public class TestSuiteController {
     private final TestSuiteService testSuiteService;
-
-    @Autowired
-    public TestSuiteController(TestSuiteService testSuiteService) {
-        this.testSuiteService = testSuiteService;
-    }
 
     // TODO возможно стоит убрать метод
     @GetMapping
     public List<TestSuiteShortDto> getProjectShortTestSuites(@PathVariable Long projectId) {
-        log.info("Request [/api/v1/suites] method [GET] - getProjectShortTestSuites. Request param - [projectId={}]",
-                projectId);
+        log.info("Request [/api/v1/projects/{}/suites] method [GET] - getProjectShortTestSuites. Request param - [projectId={}]",
+                projectId, projectId);
         return testSuiteService.getShortTestSuites(projectId);
     }
 
     @GetMapping("/{id}")
     public TestSuiteDto getTestSuiteById(@PathVariable Long projectId, @PathVariable Long id) {
-        log.info("Request [/api/v1/suites/{}] method [GET] - getTestSuiteById.", id);
+        log.info("Request [/api/v1/projects/{}/suites/{}] method [GET] - getTestSuiteById.", projectId, id);
         return testSuiteService.getTestSuiteById(projectId, id);
     }
 
     @PostMapping
-    public TestSuiteDto createTestSuite(@Valid @RequestBody TestSuiteDto testSuiteDto) {
-        log.info("Request [/api/v1/suites] method [POST] - createTestSuite. Request body - [{}]", testSuiteDto);
+    public TestSuiteDto createTestSuite(@PathVariable Long projectId, @Valid @RequestBody TestSuiteDto testSuiteDto) {
+        log.info("Request [/api/v1/projects/{}/suites] method [POST] - createTestSuite. Request body - [{}]",
+                projectId, testSuiteDto);
         return testSuiteService.createTestSuite(testSuiteDto);
     }
 
     @PutMapping
     public TestSuiteDto updateTestSuite(@PathVariable Long projectId, @Valid @RequestBody TestSuiteDto testSuiteDto) {
-        log.info("Request [/api/v1/suites] method [PUT] - updateTestSuite. Request body - [{}]", testSuiteDto);
+        log.info("Request [/api/v1/projects/{}/suites] method [PUT] - updateTestSuite. Request body - [{}]",
+                projectId, testSuiteDto);
         return testSuiteService.updateTestSuite(projectId, testSuiteDto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTestSuite(@PathVariable Long projectId, @PathVariable Long id) {
-        log.info("Request [/api/v1/suites/{}] method [DELETE] - deleteTestSuite", id );
+        log.info("Request [/api/v1/projects/{}/suites/{}] method [DELETE] - deleteTestSuite", projectId, id );
         testSuiteService.deleteTestSuite(projectId, id);
     }
 
