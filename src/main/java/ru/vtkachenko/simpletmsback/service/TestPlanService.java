@@ -3,8 +3,11 @@ package ru.vtkachenko.simpletmsback.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.vtkachenko.simpletmsback.dto.TestPlanDto;
+import ru.vtkachenko.simpletmsback.dto.response.PageDto;
 import ru.vtkachenko.simpletmsback.dto.response.TestCaseShortDto;
 import ru.vtkachenko.simpletmsback.exception.business.BadRequestException;
 import ru.vtkachenko.simpletmsback.exception.business.TestPlanNotFoundException;
@@ -93,5 +96,13 @@ public class TestPlanService {
             throw new TestPlanNotFoundException(message);
         }
         return testPlan;
+    }
+
+    public PageDto<TestPlanDto> getTestPlansPageable(Long projectId, Integer page, Integer pageSize) {
+        Page<TestPlan> testPlansPage = testPlanRepository.findTestPlansByProject_Id(projectId, PageRequest.of(page, pageSize));
+        List<TestPlanDto> testPlans = testPlansPage.getContent().stream()
+                .map(testPlanMapper::toDto)
+                .collect(Collectors.toList());
+        return new PageDto<>(testPlansPage.getTotalElements(), testPlans);
     }
 }
