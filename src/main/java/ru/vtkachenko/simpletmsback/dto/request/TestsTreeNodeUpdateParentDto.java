@@ -3,7 +3,7 @@ package ru.vtkachenko.simpletmsback.dto.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.vtkachenko.simpletmsback.constant.TestsTreeNodeType;
+import ru.vtkachenko.simpletmsback.constant.enums.TestsTreeNodeType;
 
 @Data
 @AllArgsConstructor

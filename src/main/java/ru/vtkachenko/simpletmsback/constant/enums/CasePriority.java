@@ -1,4 +1,4 @@
-package ru.vtkachenko.simpletmsback.model.enums;
+package ru.vtkachenko.simpletmsback.constant.enums;
 
 public enum CasePriority {
     LOW,

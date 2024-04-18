@@ -3,8 +3,8 @@ package ru.vtkachenko.simpletmsback.dto.response;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
-import ru.vtkachenko.simpletmsback.model.enums.CasePriority;
-import ru.vtkachenko.simpletmsback.model.enums.CaseType;
+import ru.vtkachenko.simpletmsback.constant.enums.CasePriority;
+import ru.vtkachenko.simpletmsback.constant.enums.CaseType;
 
 @Data
 @Builder

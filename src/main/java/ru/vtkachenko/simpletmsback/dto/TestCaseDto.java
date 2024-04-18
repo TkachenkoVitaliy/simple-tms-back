@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
-import ru.vtkachenko.simpletmsback.model.enums.CasePriority;
-import ru.vtkachenko.simpletmsback.model.enums.CaseType;
+import ru.vtkachenko.simpletmsback.constant.enums.CasePriority;
+import ru.vtkachenko.simpletmsback.constant.enums.CaseType;
 
 import java.util.ArrayList;
 import java.util.List;

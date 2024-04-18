@@ -4,15 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.vtkachenko.simpletmsback.constant.TestsTreeNodeType;
+import ru.vtkachenko.simpletmsback.constant.enums.TestsTreeNodeType;
 import ru.vtkachenko.simpletmsback.dto.TestsTreeNodeDto;
 import ru.vtkachenko.simpletmsback.dto.request.TestsTreeNodeUpdateParentDto;
+import ru.vtkachenko.simpletmsback.dto.response.TestNodeDto;
 import ru.vtkachenko.simpletmsback.model.TestCase;
 import ru.vtkachenko.simpletmsback.model.TestSuite;
 import ru.vtkachenko.simpletmsback.repository.TestCaseRepository;
 import ru.vtkachenko.simpletmsback.repository.TestSuiteRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -22,7 +24,55 @@ public class TestsService {
     private final TestCaseRepository testCaseRepository;
 
     // TODO переделать на использование сервисов
+    @Transactional
+    public List<TestNodeDto> getTestsNodesByProject(Long projectId) {
+        List<TestSuite> testSuites = testSuiteRepository.findTestSuiteByProject_Id(projectId);
+        List<TestCase> testCases = testCaseRepository.findTestCaseByProject_Id(projectId);
 
+        List<TestNodeDto> testSuiteNodes = testSuites.stream()
+                .map(testSuite -> TestNodeDto.builder()
+                        .id(testSuite.getId())
+                        .parentSuiteId(testSuite.getParentSuite() == null ? null : testSuite.getParentSuite().getId())
+                        .name(testSuite.getName())
+                        .type(TestsTreeNodeType.SUITE)
+                        .children(new ArrayList<>())
+                        .build())
+                .toList();
+
+        List<TestNodeDto> testCaseNodes = testCases.stream()
+                .map(testCase -> TestNodeDto.builder()
+                        .id(testCase.getId())
+                        .parentSuiteId(testCase.getParentSuite() == null ? null : testCase.getParentSuite().getId())
+                        .name(testCase.getName())
+                        .type(TestsTreeNodeType.CASE)
+                        .build())
+                .toList();
+
+        List<TestNodeDto> testNodes = new ArrayList<>();
+
+        Map <Long, TestNodeDto> nodesWithChildren = new HashMap<>();
+        testSuiteNodes.forEach(testSuiteNode -> nodesWithChildren.put(testSuiteNode.getId(), testSuiteNode));
+        testSuiteNodes.forEach(testSuiteNode -> {
+            TestNodeDto currentNode = nodesWithChildren.get(testSuiteNode.getId());
+            TestNodeDto parentNode = nodesWithChildren.get(testSuiteNode.getParentSuiteId());
+            if (parentNode != null) {
+                parentNode.getChildren().add(currentNode);
+            } else {
+                testNodes.add(currentNode);
+            }
+        });
+
+        testCaseNodes.forEach(testCaseNode -> {
+            TestNodeDto parentNode = nodesWithChildren.get(testCaseNode.getParentSuiteId());
+            if (parentNode != null) {
+                parentNode.getChildren().add(testCaseNode);
+            } else {
+                testNodes.add(testCaseNode);
+            }
+        });
+
+        return testNodes;
+    }
 
     @Transactional
     public List<TestsTreeNodeDto> getTestsTreeByProject(Long projectId) {

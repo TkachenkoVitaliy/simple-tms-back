@@ -8,8 +8,8 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.ColumnDefault;
-import ru.vtkachenko.simpletmsback.model.enums.CasePriority;
-import ru.vtkachenko.simpletmsback.model.enums.CaseType;
+import ru.vtkachenko.simpletmsback.constant.enums.CasePriority;
+import ru.vtkachenko.simpletmsback.constant.enums.CaseType;
 
 import java.util.ArrayList;
 import java.util.HashSet;

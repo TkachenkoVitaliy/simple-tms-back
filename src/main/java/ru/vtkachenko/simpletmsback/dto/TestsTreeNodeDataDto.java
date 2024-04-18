@@ -2,7 +2,7 @@ package ru.vtkachenko.simpletmsback.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.vtkachenko.simpletmsback.constant.TestsTreeNodeType;
+import ru.vtkachenko.simpletmsback.constant.enums.TestsTreeNodeType;
 
 import java.util.ArrayList;
 import java.util.List;
