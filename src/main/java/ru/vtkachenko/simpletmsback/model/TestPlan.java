@@ -39,7 +39,7 @@ public class TestPlan extends AbstractEntity {
     private Project project;
     // TODO нужен список testCase, но нужен ли их порядок? Если да, то нужна дополнительная таблица и будут сложности
     // с маппингом
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(name="plan_case",
             joinColumns = @JoinColumn(name="test_plan_id"),
             inverseJoinColumns = @JoinColumn(name = "test_case_id")

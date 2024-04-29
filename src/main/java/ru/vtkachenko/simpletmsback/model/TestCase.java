@@ -56,8 +56,7 @@ public class TestCase extends AbstractEntity {
     @ToString.Exclude
     @Builder.Default
     private List<TestCaseStep> testSteps = new ArrayList<>();
-    @ManyToMany
-    @JoinTable(name="plan_case")
+    @ManyToMany(mappedBy = "testCases")
     private Set<TestPlan> testPlans = new HashSet<>();
 
     public void removeAllTestSteps() {

@@ -16,9 +16,7 @@ import ru.vtkachenko.simpletmsback.model.TestCase;
 import ru.vtkachenko.simpletmsback.model.TestPlan;
 import ru.vtkachenko.simpletmsback.repository.TestPlanRepository;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -62,16 +60,18 @@ public class TestPlanService {
         TestPlan testPlan = findTestPlanById(projectId, testPlanDto.getId());
         testPlan.setName(testPlanDto.getName());
         testPlan.setDescription(testPlanDto.getDescription());
-        List<Long> testCasesIds = testPlanDto.getTestCases().stream()
-                .collect(Collectors.toList());
-        Set<TestCase> testCases = testPlan.getTestCases();
-        testCases.forEach(testCase -> {
+        Set<Long> testCasesIds = new HashSet<>(testPlanDto.getTestCases());
+        Set<TestCase> copyTestCases = new HashSet<>(testPlan.getTestCases());
+        copyTestCases.forEach(testCase -> {
             if (!testCasesIds.contains(testCase.getId())) {
                 testPlan.removeTestCase(testCase);
                 testCasesIds.remove(testCase.getId());
+            } else {
+                testCasesIds.remove(testCase.getId());
             }
         });
-        testCaseService.getTestCasesByIds(testCasesIds)
+        log.info("testCasesIds - {}", testCasesIds);
+        testCaseService.getTestCasesByIds(new ArrayList<>(testCasesIds))
                 .forEach(testPlan::addTestCase);
         return testPlanMapper.toDto(testPlan);
     }
