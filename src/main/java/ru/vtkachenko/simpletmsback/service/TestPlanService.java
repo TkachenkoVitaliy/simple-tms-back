@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.vtkachenko.simpletmsback.dto.TestPlanDto;
 import ru.vtkachenko.simpletmsback.dto.response.PageDto;
-import ru.vtkachenko.simpletmsback.dto.response.TestCaseShortDto;
 import ru.vtkachenko.simpletmsback.exception.business.BadRequestException;
 import ru.vtkachenko.simpletmsback.exception.business.TestPlanNotFoundException;
 import ru.vtkachenko.simpletmsback.exception.enums.ErrorEntity;
@@ -63,17 +62,16 @@ public class TestPlanService {
         TestPlan testPlan = findTestPlanById(projectId, testPlanDto.getId());
         testPlan.setName(testPlanDto.getName());
         testPlan.setDescription(testPlanDto.getDescription());
-        List<Long> testCasesDtoIds = testPlanDto.getTestCases().stream()
-                .map(TestCaseShortDto::getId)
+        List<Long> testCasesIds = testPlanDto.getTestCases().stream()
                 .collect(Collectors.toList());
         Set<TestCase> testCases = testPlan.getTestCases();
         testCases.forEach(testCase -> {
-            if (!testCasesDtoIds.contains(testCase.getId())) {
+            if (!testCasesIds.contains(testCase.getId())) {
                 testPlan.removeTestCase(testCase);
-                testCasesDtoIds.remove(testCase.getId());
+                testCasesIds.remove(testCase.getId());
             }
         });
-        testCaseService.getTestCasesByIds(testCasesDtoIds)
+        testCaseService.getTestCasesByIds(testCasesIds)
                 .forEach(testPlan::addTestCase);
         return testPlanMapper.toDto(testPlan);
     }

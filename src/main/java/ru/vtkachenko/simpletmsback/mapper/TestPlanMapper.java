@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.vtkachenko.simpletmsback.dto.TestPlanDto;
 import ru.vtkachenko.simpletmsback.dto.response.TestCaseShortDto;
+import ru.vtkachenko.simpletmsback.model.TestCase;
 import ru.vtkachenko.simpletmsback.model.TestPlan;
 import ru.vtkachenko.simpletmsback.service.ProjectService;
 
@@ -18,8 +19,8 @@ public class TestPlanMapper implements EntityMapper<TestPlanDto, TestPlan> {
 
     @Override
     public TestPlanDto toDto(TestPlan entity) {
-        Set<TestCaseShortDto> testCasesShortDto = entity.getTestCases().stream()
-                .map(testCaseShortMapper::toDto)
+        Set<Long> testCasesIds = entity.getTestCases().stream()
+                .map(TestCase::getId)
                 .collect(Collectors.toSet());
 
         return TestPlanDto.builder()
@@ -27,7 +28,7 @@ public class TestPlanMapper implements EntityMapper<TestPlanDto, TestPlan> {
                 .projectId(entity.getProject().getId())
                 .name(entity.getName())
                 .description(entity.getDescription())
-                .testCases(testCasesShortDto)
+                .testCases(testCasesIds)
                 .build();
     }
 
