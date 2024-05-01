@@ -51,6 +51,9 @@ public class TestPlanService {
             throw new BadRequestException(message, ErrorEntity.PLAN);
         }
         TestPlan testPlan = testPlanMapper.toEntity(testPlanDto);
+        List<Long> testCasesIds = new ArrayList<>(testPlanDto.getTestCases());
+        List<TestCase> testCasesByIds = testCaseService.getTestCasesByIds(testCasesIds);
+        testPlan.getTestCases().addAll(testCasesByIds);
         testPlan = testPlanRepository.save(testPlan);
         return testPlanMapper.toDto(testPlan);
     }

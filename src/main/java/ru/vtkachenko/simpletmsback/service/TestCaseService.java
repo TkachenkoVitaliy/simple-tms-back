@@ -1,5 +1,6 @@
 package ru.vtkachenko.simpletmsback.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,10 +34,19 @@ public class TestCaseService {
     private final TestCaseMapper mapper;
     private final TestStepService testStepService;
 
+    public TestCase getTestCaseReferenceById(Long id) {
+        try {
+            return testCaseRepository.getReferenceById(id);
+        } catch (EntityNotFoundException e) {
+            String message = String.format("Cant find test case with id - %s", id);
+            log.error(message);
+            throw new TestCaseNotFoundException(message);
+        }
+    }
+
     public List<TestCase> getTestCasesByIds(List<Long> ids) {
         return testCaseRepository.findAllById(ids);
     }
-
 
     public TestCaseDto getTestCase(Long id) {
         TestCase testCase = testCaseRepository.getTestCaseById(id).orElseThrow(() -> {
