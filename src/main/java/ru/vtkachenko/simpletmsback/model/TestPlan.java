@@ -10,11 +10,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -44,6 +40,7 @@ public class TestPlan extends AbstractEntity {
             joinColumns = @JoinColumn(name="test_plan_id"),
             inverseJoinColumns = @JoinColumn(name = "test_case_id")
     )
+    @Builder.Default
     private Set<TestCase> testCases = new HashSet<>();
 
     public void addTestCase(TestCase testCase) {
