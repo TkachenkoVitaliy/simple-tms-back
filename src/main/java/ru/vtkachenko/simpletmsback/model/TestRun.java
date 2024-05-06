@@ -24,6 +24,8 @@ public class TestRun {
     private Long projectId;
     @NotNull
     private TestPlanShort testPlan;
+    @Builder.Default
+    private List<RunTestCase> cases = new ArrayList<>();
     private long timer;
     @NotNull
     @Builder.Default
@@ -59,6 +61,8 @@ public class TestRun {
     @Data
     @Builder
     public static class RunTestCaseStep {
+        @NotNull
+        private Long id;
         @NotNull
         private Integer orderNumber;
         private String name;
