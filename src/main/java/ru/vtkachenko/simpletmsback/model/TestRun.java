@@ -1,5 +1,6 @@
 package ru.vtkachenko.simpletmsback.model;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,10 +18,16 @@ import java.util.List;
 public class TestRun {
     @Id
     private String id;
+    @NotNull
     private String name;
+    @NotNull
+    private Long projectId;
+    @NotNull
     private TestPlanShort testPlan;
-    private Long timer;
-    private TestRunState state;
+    private long timer;
+    @NotNull
+    @Builder.Default
+    private TestRunState state = TestRunState.NOT_STARTED;
 
 
     @Data
@@ -33,22 +40,29 @@ public class TestRun {
     @Data
     @Builder
     public static class RunTestCase {
+        @NotNull
         private int orderNumber;
+        @NotNull
         private Long id;
+        @NotNull
         private String name;
         private String preconditions;
         @Builder.Default
         private List<RunTestCaseStep> steps = new ArrayList<>();
-        private Long timer;
-        private TestRunState state;
+        private long timer;
+        @NotNull
+        @Builder.Default
+        private TestRunState state = TestRunState.NOT_STARTED;
         private String comment;
     }
 
     @Data
     @Builder
     public static class RunTestCaseStep {
-        private int orderNumber;
+        @NotNull
+        private Integer orderNumber;
         private String name;
+        @NotNull
         private String action;
         private String expected;
     }
