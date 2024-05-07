@@ -3,10 +3,13 @@ package ru.vtkachenko.simpletmsback.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.vtkachenko.simpletmsback.constant.enums.TestRunState;
 import ru.vtkachenko.simpletmsback.dto.TestPlanDto;
 import ru.vtkachenko.simpletmsback.dto.request.CreateTestRunDto;
+import ru.vtkachenko.simpletmsback.dto.response.PageDto;
 import ru.vtkachenko.simpletmsback.model.TestCase;
 import ru.vtkachenko.simpletmsback.model.TestCaseStep;
 import ru.vtkachenko.simpletmsback.model.TestRun;
@@ -24,15 +27,6 @@ public class TestRunService {
     private final TestRunRepository testRunRepository;
     private final TestPlanService testPlanService;
     private final TestCaseService testCaseService;
-
-    public TestRun test() {
-        TestRun testRun = TestRun.builder()
-                .name("testRunFirst")
-                .state(TestRunState.NOT_STARTED)
-                .build();
-        TestRun saved = testRunRepository.save(testRun);
-        return saved;
-    }
 
     public TestRun createTestRun(Long projectId, CreateTestRunDto createDto) {
         TestPlanDto testPlan = testPlanService.getTestPlanById(projectId, createDto.getTestPlanId());
@@ -84,5 +78,10 @@ public class TestRunService {
                 .build();
 
         return testRunRepository.save(testRun);
+    }
+
+    public PageDto<TestRun> getTestRunsPageable(Long projectId, Integer page, Integer pageSize) {
+        Page<TestRun> runsPageByProjectId = testRunRepository.findAllByProjectId(projectId, PageRequest.of(page, pageSize));
+        return new PageDto<>(runsPageByProjectId.getTotalElements(), runsPageByProjectId.getContent());
     }
 }

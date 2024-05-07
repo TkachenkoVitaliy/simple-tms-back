@@ -3,6 +3,8 @@ package ru.vtkachenko.simpletmsback.model;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.HashIndexed;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import ru.vtkachenko.simpletmsback.constant.enums.TestRunState;
 
@@ -21,6 +23,8 @@ public class TestRun {
     @NotNull
     private String name;
     @NotNull
+    @Indexed
+    @HashIndexed
     private Long projectId;
     @NotNull
     private TestPlanShort testPlan;
