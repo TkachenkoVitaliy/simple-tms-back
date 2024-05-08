@@ -34,4 +34,11 @@ public class TestRunController {
                 projectId, page, pageSize);
         return testRunService.getTestRunsPageable(projectId, page, pageSize);
     }
+
+    @GetMapping("/{id}")
+    public TestRun getTestRun(@PathVariable Long projectId, @PathVariable String id) {
+        log.info("Request [/api/v1/project/{}/runs/{}] method [GET] - getTestPlan",
+                projectId, id);
+        return testRunService.getTestRun(projectId, id);
+    }
 }

@@ -10,6 +10,8 @@ import ru.vtkachenko.simpletmsback.constant.enums.TestRunState;
 import ru.vtkachenko.simpletmsback.dto.TestPlanDto;
 import ru.vtkachenko.simpletmsback.dto.request.CreateTestRunDto;
 import ru.vtkachenko.simpletmsback.dto.response.PageDto;
+import ru.vtkachenko.simpletmsback.exception.business.TestPlanNotFoundException;
+import ru.vtkachenko.simpletmsback.exception.business.TestRunNotFoundException;
 import ru.vtkachenko.simpletmsback.model.TestCase;
 import ru.vtkachenko.simpletmsback.model.TestCaseStep;
 import ru.vtkachenko.simpletmsback.model.TestRun;
@@ -18,6 +20,7 @@ import ru.vtkachenko.simpletmsback.repository.TestRunRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -83,5 +86,25 @@ public class TestRunService {
     public PageDto<TestRun> getTestRunsPageable(Long projectId, Integer page, Integer pageSize) {
         Page<TestRun> runsPageByProjectId = testRunRepository.findAllByProjectId(projectId, PageRequest.of(page, pageSize));
         return new PageDto<>(runsPageByProjectId.getTotalElements(), runsPageByProjectId.getContent());
+    }
+
+    public TestRun getTestRun(Long projectId, String testRunId) {
+        TestRun testRun = findTestRunById(projectId, testRunId);
+        return testRun;
+    }
+
+    private TestRun findTestRunById(Long projectId, String id) {
+        TestRun testRun = testRunRepository.findById(id).orElseThrow(() -> {
+            String message = String.format("Cant find test run with id - %s", id);
+            log.error(message);
+            return new TestRunNotFoundException(message);
+        });
+        if (!Objects.equals(testRun.getProjectId(), projectId)) {
+            String message = String.format("Cant find test run with id - %s in project with id -- %s",
+                    id, projectId);
+            log.error(message);
+            throw new TestPlanNotFoundException(message);
+        }
+        return testRun;
     }
 }

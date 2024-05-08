@@ -8,6 +8,7 @@ public enum ErrorEntity {
     PLAN(200_000),
     SUITE(300_000),
     CASE(400_000),
+    RUN(500_000),
     OTHER(900_000);
 
     private final Integer code;
