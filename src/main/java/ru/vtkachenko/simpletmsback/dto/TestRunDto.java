@@ -1,52 +1,43 @@
-package ru.vtkachenko.simpletmsback.model;
+package ru.vtkachenko.simpletmsback.dto;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.HashIndexed;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.vtkachenko.simpletmsback.constant.enums.TestRunState;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(collection = "testRuns")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+@Data
 @Builder
-public class TestRun {
-    @Id
+public class TestRunDto {
     private String id;
     @NotNull
     private String name;
     @NotNull
-    @Indexed
-    @HashIndexed
     private Long projectId;
     @NotNull
-    private TestPlanShort testPlan;
+    private TestPlanShortDto testPlan;
     @Builder.Default
-    private List<RunTestCase> cases = new ArrayList<>();
+    private List<RunTestCaseDto> cases = new ArrayList<>();
     private long timer;
     @Builder.Default
     private TestRunState state = TestRunState.NOT_STARTED;
-
 
     @Data
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class TestPlanShort {
+    public static class TestPlanShortDto {
         private Long id;
         private String name;
     }
 
     @Data
     @Builder
-    public static class RunTestCase {
+    public static class RunTestCaseDto {
         private int orderNumber;
         @NotNull
         private Long id;
@@ -54,7 +45,7 @@ public class TestRun {
         private String name;
         private String preconditions;
         @Builder.Default
-        private List<RunTestCaseStep> steps = new ArrayList<>();
+        private List<RunTestCaseStepDto> steps = new ArrayList<>();
         private long timer;
         @Builder.Default
         private TestRunState state = TestRunState.NOT_STARTED;
@@ -63,7 +54,7 @@ public class TestRun {
 
     @Data
     @Builder
-    public static class RunTestCaseStep {
+    public static class RunTestCaseStepDto {
         @NotNull
         private Long id;
         @NotNull
