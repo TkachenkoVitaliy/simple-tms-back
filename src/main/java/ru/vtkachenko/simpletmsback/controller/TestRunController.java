@@ -31,6 +31,14 @@ public class TestRunController {
         return testRunMapper.toDto(testRun);
     }
 
+    @PutMapping
+    public TestRunDto updateTestRun(@PathVariable Long projectId, @Valid @RequestBody TestRunDto testRunDto) {
+        log.info("Request [/api/v1/projects/{}/runs] method [PUT] - updateTestRun. Request body - [{}]",
+                projectId, testRunDto);
+        TestRun testRun = testRunService.updateTestRun(projectId, testRunDto);
+        return testRunMapper.toDto(testRun);
+    }
+
     @GetMapping
     public PageDto<TestRunDto> getTestRunsPageable(
             @PathVariable Long projectId,
