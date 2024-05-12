@@ -3,6 +3,7 @@ package ru.vtkachenko.simpletmsback.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.vtkachenko.simpletmsback.dto.TestRunDto;
 import ru.vtkachenko.simpletmsback.dto.request.CreateTestRunDto;
@@ -45,7 +46,7 @@ public class TestRunController {
             @RequestParam Integer page,
             @RequestParam Integer pageSize
     ) {
-        log.info("Request [/api/v1/project/{}/runs?page={}&pageSize={}] method [GET] - getTestPlansPageable",
+        log.info("Request [/api/v1/project/{}/runs?page={}&pageSize={}] method [GET] - getTestRunsPageable",
                 projectId, page, pageSize);
         PageDto<TestRun> testRunsPageable = testRunService.getTestRunsPageable(projectId, page, pageSize);
         List<TestRunDto> testRunDtos = testRunsPageable.getData().stream()
@@ -57,9 +58,17 @@ public class TestRunController {
 
     @GetMapping("/{id}")
     public TestRunDto getTestRun(@PathVariable Long projectId, @PathVariable String id) {
-        log.info("Request [/api/v1/project/{}/runs/{}] method [GET] - getTestPlan",
+        log.info("Request [/api/v1/project/{}/runs/{}] method [GET] - getTestRun",
                 projectId, id);
         TestRun testRun = testRunService.getTestRun(projectId, id);
         return testRunMapper.toDto(testRun);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTestRun(@PathVariable Long projectId, @PathVariable String id) {
+        log.info("Request [/api/v1/project/{}/runs/{}] method [DELETE] - deleteTestRun",
+                projectId, id);
+        testRunService.deleteTestRun(projectId, id);
     }
 }

@@ -171,4 +171,8 @@ public class TestRunService {
     }
 
 
+    public void deleteTestRun(Long projectId, String id) {
+        TestRun testRun = findTestRunById(projectId, id);
+        testRunRepository.delete(testRun);
+    }
 }
