@@ -94,6 +94,7 @@ public class TestRunService {
         testRun.setName(testRunDto.getName());
         testRun.setProjectId(testRunDto.getProjectId());
         testRun.setTimer(testRunDto.getTimer());
+        testRun.setCurrentCaseId(testRunDto.getCurrentCaseId());
 
         TestRunDto.TestPlanShortDto testPlanDto = testRunDto.getTestPlan();
         if (testPlanDto != null) {

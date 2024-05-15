@@ -47,6 +47,7 @@ public class TestRunMapper implements EntityMapper<TestRunDto, TestRun> {
                 .cases(cases)
                 .timer(entity.getTimer())
                 .state(entity.getState())
+                .currentCaseId(entity.getCurrentCaseId())
                 .build();
     }
 
@@ -88,6 +89,7 @@ public class TestRunMapper implements EntityMapper<TestRunDto, TestRun> {
                 .cases(cases)
                 .timer(dto.getTimer())
                 .state(dto.getState())
+                .currentCaseId(dto.getCurrentCaseId())
                 .build();
     }
 }

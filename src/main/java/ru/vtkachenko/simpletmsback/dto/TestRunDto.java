@@ -25,6 +25,7 @@ public class TestRunDto {
     private long timer;
     @Builder.Default
     private TestRunState state = TestRunState.NOT_STARTED;
+    private Long currentCaseId;
 
     @Data
     @Builder
