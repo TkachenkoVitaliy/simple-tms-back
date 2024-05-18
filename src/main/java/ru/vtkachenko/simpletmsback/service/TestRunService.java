@@ -12,6 +12,7 @@ import ru.vtkachenko.simpletmsback.dto.TestPlanDto;
 import ru.vtkachenko.simpletmsback.dto.TestRunDto;
 import ru.vtkachenko.simpletmsback.dto.request.CreateTestRunDto;
 import ru.vtkachenko.simpletmsback.dto.response.PageDto;
+import ru.vtkachenko.simpletmsback.exception.business.TestCaseNotFoundException;
 import ru.vtkachenko.simpletmsback.exception.business.TestPlanNotFoundException;
 import ru.vtkachenko.simpletmsback.exception.business.TestRunCreatingException;
 import ru.vtkachenko.simpletmsback.exception.business.TestRunNotFoundException;
@@ -164,6 +165,46 @@ public class TestRunService {
         return testRun;
     }
 
+    public void deleteTestRun(Long projectId, String id) {
+        TestRun testRun = findTestRunById(projectId, id);
+        testRunRepository.delete(testRun);
+    }
+
+    public TestRun updateTestRunCase(Long projectId, String testRunId, Long caseId, TestRunDto.RunTestCaseDto caseDto) {
+        // TODO добавить проверку на соответствие caseId и caseDto.getId()
+        TestRun testRun = findTestRunById(projectId, testRunId);
+        // Для установки следующего currentCaseId для testRun'a
+        List<TestRun.RunTestCase> uncompletedCases = testRun.getCases().stream()
+                .filter(testCase -> !testCase.getState().equals(TestRunState.COMPLETED))
+                .toList();
+
+        TestRun.RunTestCase runTestCase = testRun.getCases().stream()
+                .filter(testCase -> testCase.getId().equals(caseId))
+                .findFirst()
+                .orElseThrow(() -> {
+                    String message = String.format("Can't update case with - %s. Because testRun with id - %s not contains this case", caseId, testRunId);
+                    log.error(message);
+                    return new TestCaseNotFoundException(message);
+                });
+
+        int uncompletedIndexOfUpdatedCase = uncompletedCases.indexOf(runTestCase);
+
+        runTestCase.setState(caseDto.getState());
+        runTestCase.setTimer(caseDto.getTimer());
+        runTestCase.setComment(caseDto.getComment());
+
+        if (uncompletedCases.size() <= 1) {
+            testRun.setCurrentCaseId(null);
+        } else {
+            if (uncompletedIndexOfUpdatedCase == uncompletedCases.size() - 1) {
+                testRun.setCurrentCaseId(uncompletedCases.getFirst().getId());
+            } else {
+                testRun.setCurrentCaseId(uncompletedCases.get(uncompletedIndexOfUpdatedCase + 1).getId());
+            }
+        }
+        return testRunRepository.save(testRun);
+    }
+
     private TestRun findTestRunById(Long projectId, String id) {
         TestRun testRun = testRunRepository.findById(id).orElseThrow(() -> {
             String message = String.format("Cant find test run with id - %s", id);
@@ -177,11 +218,5 @@ public class TestRunService {
             throw new TestPlanNotFoundException(message);
         }
         return testRun;
-    }
-
-
-    public void deleteTestRun(Long projectId, String id) {
-        TestRun testRun = findTestRunById(projectId, id);
-        testRunRepository.delete(testRun);
     }
 }
