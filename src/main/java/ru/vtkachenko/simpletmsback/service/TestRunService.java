@@ -13,6 +13,7 @@ import ru.vtkachenko.simpletmsback.dto.TestRunDto;
 import ru.vtkachenko.simpletmsback.dto.request.CreateTestRunDto;
 import ru.vtkachenko.simpletmsback.dto.response.PageDto;
 import ru.vtkachenko.simpletmsback.exception.business.TestPlanNotFoundException;
+import ru.vtkachenko.simpletmsback.exception.business.TestRunCreatingException;
 import ru.vtkachenko.simpletmsback.exception.business.TestRunNotFoundException;
 import ru.vtkachenko.simpletmsback.mapper.TestRunMapper;
 import ru.vtkachenko.simpletmsback.model.TestCase;
@@ -38,6 +39,12 @@ public class TestRunService {
     @Transactional
     public TestRun createTestRun(Long projectId, CreateTestRunDto createDto) {
         TestPlanDto testPlan = testPlanService.getTestPlanById(projectId, createDto.getTestPlanId());
+        if (testPlan.getTestCases().isEmpty()) {
+            String message = String.format("Cant create test run from test plan with id - %s. " +
+                    "Because test plan don't have test cases", testPlan.getId());
+            log.error(message);
+            throw new TestRunCreatingException(message);
+        }
         TestRun.TestPlanShort testPlanShort = TestRun.TestPlanShort.builder()
                 .id(testPlan.getId())
                 .name(testPlan.getName())
