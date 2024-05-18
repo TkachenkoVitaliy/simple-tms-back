@@ -83,6 +83,7 @@ public class TestRunService {
                 .cases(runTestCases)
                 .timer(0)
                 .state(TestRunState.NOT_STARTED)
+                .currentCaseId(runTestCases.getFirst().getId())
                 .build();
 
         return testRunRepository.save(testRun);
