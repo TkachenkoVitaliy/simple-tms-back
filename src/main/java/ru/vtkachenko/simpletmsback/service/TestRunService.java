@@ -202,6 +202,10 @@ public class TestRunService {
                 testRun.setCurrentCaseId(uncompletedCases.get(uncompletedIndexOfUpdatedCase + 1).getId());
             }
         }
+        long totalTime = testRun.getCases().stream()
+                .mapToLong(TestRun.RunTestCase::getTimer)
+                .sum();
+        testRun.setTimer(totalTime);
         return testRunRepository.save(testRun);
     }
 
