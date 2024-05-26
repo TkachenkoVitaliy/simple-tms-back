@@ -193,15 +193,18 @@ public class TestRunService {
         runTestCase.setTimer(caseDto.getTimer());
         runTestCase.setComment(caseDto.getComment());
 
-        if (uncompletedCases.size() <= 1) {
-            testRun.setCurrentCaseId(null);
-        } else {
-            if (uncompletedIndexOfUpdatedCase == uncompletedCases.size() - 1) {
-                testRun.setCurrentCaseId(uncompletedCases.getFirst().getId());
+        if (!caseDto.getState().equals(TestRunState.PAUSED)) {
+            if (uncompletedCases.size() <= 1) {
+                testRun.setCurrentCaseId(null);
             } else {
-                testRun.setCurrentCaseId(uncompletedCases.get(uncompletedIndexOfUpdatedCase + 1).getId());
+                if (uncompletedIndexOfUpdatedCase == uncompletedCases.size() - 1) {
+                    testRun.setCurrentCaseId(uncompletedCases.getFirst().getId());
+                } else {
+                    testRun.setCurrentCaseId(uncompletedCases.get(uncompletedIndexOfUpdatedCase + 1).getId());
+                }
             }
         }
+
         long totalTime = testRun.getCases().stream()
                 .mapToLong(TestRun.RunTestCase::getTimer)
                 .sum();
