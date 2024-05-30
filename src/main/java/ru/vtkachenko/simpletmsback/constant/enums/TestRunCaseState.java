@@ -1,8 +1,8 @@
 package ru.vtkachenko.simpletmsback.constant.enums;
 
-public enum TestRunState {
+public enum TestRunCaseState {
     NOT_STARTED,
-    IN_PROGRESS,
+    PAUSED,
     BLOCKED,
     FAILED,
     COMPLETED,

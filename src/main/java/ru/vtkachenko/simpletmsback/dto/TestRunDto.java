@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.vtkachenko.simpletmsback.constant.enums.TestRunCaseState;
 import ru.vtkachenko.simpletmsback.constant.enums.TestRunState;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class TestRunDto {
         private List<RunTestCaseStepDto> steps = new ArrayList<>();
         private long timer;
         @Builder.Default
-        private TestRunState state = TestRunState.NOT_STARTED;
+        private TestRunCaseState state = TestRunCaseState.NOT_STARTED;
         private String comment;
     }
 

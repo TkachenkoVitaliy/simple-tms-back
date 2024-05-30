@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.vtkachenko.simpletmsback.constant.enums.TestRunCaseState;
 import ru.vtkachenko.simpletmsback.constant.enums.TestRunState;
 import ru.vtkachenko.simpletmsback.dto.TestPlanDto;
 import ru.vtkachenko.simpletmsback.dto.TestRunDto;
@@ -75,7 +76,7 @@ public class TestRunService {
                     .preconditions(testCase.getPreconditions())
                     .steps(runTestCaseSteps)
                     .timer(0)
-                    .state(TestRunState.NOT_STARTED)
+                    .state(TestRunCaseState.NOT_STARTED)
                     .comment("")
                     .build();
 
@@ -175,7 +176,7 @@ public class TestRunService {
         TestRun testRun = findTestRunById(projectId, testRunId);
         // Для установки следующего currentCaseId для testRun'a
         List<TestRun.RunTestCase> uncompletedCases = testRun.getCases().stream()
-                .filter(testCase -> !testCase.getState().equals(TestRunState.COMPLETED))
+                .filter(testCase -> !testCase.getState().equals(TestRunCaseState.COMPLETED))
                 .toList();
 
         TestRun.RunTestCase runTestCase = testRun.getCases().stream()
@@ -193,7 +194,7 @@ public class TestRunService {
         runTestCase.setTimer(caseDto.getTimer());
         runTestCase.setComment(caseDto.getComment());
 
-        if (!caseDto.getState().equals(TestRunState.PAUSED)) {
+        if (!caseDto.getState().equals(TestRunCaseState.PAUSED)) {
             if (uncompletedCases.size() <= 1) {
                 testRun.setCurrentCaseId(null);
             } else {
@@ -209,6 +210,9 @@ public class TestRunService {
                 .mapToLong(TestRun.RunTestCase::getTimer)
                 .sum();
         testRun.setTimer(totalTime);
+        TestRunState newTestRunState = calcTestRunState(testRun.getCases());
+        testRun.setState(newTestRunState);
+
         return testRunRepository.save(testRun);
     }
 
@@ -225,5 +229,29 @@ public class TestRunService {
             throw new TestPlanNotFoundException(message);
         }
         return testRun;
+    }
+
+    private TestRunState calcTestRunState(List<TestRun.RunTestCase> testRunCases) {
+        boolean isCompleted = testRunCases.stream()
+                .allMatch(runTestCase -> runTestCase.getState().equals(TestRunCaseState.COMPLETED));
+        if (isCompleted) {
+            return TestRunState.COMPLETED;
+        }
+        boolean isNotStarted = testRunCases.stream()
+                .allMatch(runTestCase -> runTestCase.getState().equals(TestRunCaseState.NOT_STARTED));
+        if (isNotStarted) {
+            return TestRunState.NOT_STARTED;
+        }
+        boolean haveFailed = testRunCases.stream()
+                .anyMatch(runTestCase -> runTestCase.getState().equals(TestRunCaseState.FAILED));
+        if (haveFailed) {
+            return TestRunState.FAILED;
+        }
+        boolean haveBlocked = testRunCases.stream()
+                .anyMatch(runTestCase -> runTestCase.getState().equals(TestRunCaseState.BLOCKED));
+        if (haveBlocked) {
+            return TestRunState.BLOCKED;
+        }
+        return TestRunState.IN_PROGRESS;
     }
 }

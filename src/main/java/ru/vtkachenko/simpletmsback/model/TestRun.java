@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.HashIndexed;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import ru.vtkachenko.simpletmsback.constant.enums.TestRunCaseState;
 import ru.vtkachenko.simpletmsback.constant.enums.TestRunState;
 
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class TestRun {
         private List<RunTestCaseStep> steps = new ArrayList<>();
         private long timer;
         @Builder.Default
-        private TestRunState state = TestRunState.NOT_STARTED;
+        private TestRunCaseState state = TestRunCaseState.NOT_STARTED;
         private String comment;
     }
 
