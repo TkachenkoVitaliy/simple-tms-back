@@ -20,8 +20,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "projects", uniqueConstraints = {@UniqueConstraint(name = "name_unique_idx", columnNames = "name")})
 public class Project extends AbstractEntity {
-
-
     @NotNull
     private String name;
     @ColumnDefault("''")
