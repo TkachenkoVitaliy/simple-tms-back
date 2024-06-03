@@ -1,4 +1,4 @@
-package ru.vtkachenko.simpletmsback.model;
+package ru.vtkachenko.simpletmsback.security.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,6 +7,7 @@ import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ru.vtkachenko.simpletmsback.constant.enums.SystemRole;
+import ru.vtkachenko.simpletmsback.model.AbstractEntity;
 
 @NoArgsConstructor
 @AllArgsConstructor

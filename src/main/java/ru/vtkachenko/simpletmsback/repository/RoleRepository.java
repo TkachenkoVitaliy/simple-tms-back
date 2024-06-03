@@ -2,7 +2,7 @@ package ru.vtkachenko.simpletmsback.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.vtkachenko.simpletmsback.constant.enums.SystemRole;
-import ru.vtkachenko.simpletmsback.model.Role;
+import ru.vtkachenko.simpletmsback.security.model.Role;
 
 import java.util.Optional;
 

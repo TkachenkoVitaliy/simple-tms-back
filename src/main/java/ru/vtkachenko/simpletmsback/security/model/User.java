@@ -1,10 +1,11 @@
-package ru.vtkachenko.simpletmsback.model;
+package ru.vtkachenko.simpletmsback.security.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import ru.vtkachenko.simpletmsback.model.AbstractEntity;
 
 import java.util.HashSet;
 import java.util.Set;
