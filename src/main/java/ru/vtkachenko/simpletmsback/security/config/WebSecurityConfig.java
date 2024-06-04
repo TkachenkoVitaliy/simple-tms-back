@@ -54,18 +54,15 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
+        return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.requestMatchers("auth/**").permitAll() //вход без авторизации
                         .requestMatchers("swagger-ui/**").permitAll()
 //                        .requestMatchers("api/v1/**").permitAll()) //с авторизацией и аутентификацией
                         .requestMatchers("api/v1/**").authenticated()) //с авторизацией и аутентификацией
-                .exceptionHandling(Customizer.withDefaults());
-
-        http.authenticationProvider(authenticationProvider());
-
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
+                .exceptionHandling((exception) -> exception.authenticationEntryPoint(unauthorizedHandler))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 }
