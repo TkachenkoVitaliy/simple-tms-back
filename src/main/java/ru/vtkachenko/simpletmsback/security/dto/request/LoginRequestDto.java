@@ -1,4 +1,4 @@
-package ru.vtkachenko.simpletmsback.dto.request;
+package ru.vtkachenko.simpletmsback.security.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
