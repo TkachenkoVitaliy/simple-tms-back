@@ -27,6 +27,19 @@ public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
     private final JwtUtils jwtUtils;
+    private final String[] AUTH_WHITELIST = {
+            "/auth/**",
+            "/swagger-ui/**",
+            "swagger.html",
+            "/webjars/**",
+            "/swagger-resources/**",
+            "/api-docs",
+            "/api-docs.yaml",
+            "/api-docs/**",
+            "/actuator",
+            "/actuator/**",
+            "/error",
+    };
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -59,8 +72,8 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling((exception) -> exception.authenticationEntryPoint(unauthorizedHandler))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("auth/**").permitAll() //вход без авторизации
-                        .requestMatchers("api/v1/**").authenticated()) //с авторизацией и аутентификацией
+                .authorizeHttpRequests(auth -> auth.requestMatchers(AUTH_WHITELIST).permitAll() //вход без авторизации
+                        .requestMatchers("/api/v1/**").authenticated()) //с авторизацией и аутентификацией
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
