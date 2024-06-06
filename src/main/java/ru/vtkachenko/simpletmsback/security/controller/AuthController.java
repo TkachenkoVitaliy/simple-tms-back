@@ -4,10 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.vtkachenko.simpletmsback.constant.enums.SystemRole;
@@ -21,6 +18,8 @@ import ru.vtkachenko.simpletmsback.security.jwt.JwtUtils;
 import ru.vtkachenko.simpletmsback.security.model.Role;
 import ru.vtkachenko.simpletmsback.security.model.User;
 import ru.vtkachenko.simpletmsback.security.service.AuthService;
+import ru.vtkachenko.simpletmsback.security.service.RoleService;
+import ru.vtkachenko.simpletmsback.security.service.UserService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +33,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final UserService userService;
+    private final RoleService roleService;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -60,35 +61,10 @@ public class AuthController {
 
     @PostMapping("/signup")
     public String registerUser(@Valid @RequestBody SignupRequestDto signupRequest) {
-        if (userRepository.existsByUsername(signupRequest.getUsername())) {
+        if (userService.isCredentialsAlreadyTaken(signupRequest.getUsername(), signupRequest.getEmail())) {
             return "ERROR";
         }
-        if(userRepository.existsByEmail(signupRequest.getEmail())) {
-            return "ERROR";
-        }
-
-        Set<String> strRoles = signupRequest.getRoles();
-        Set<Role> roles = new HashSet<>();
-
-        if (strRoles == null || strRoles.isEmpty()) {
-            Role userRole = roleRepository.findByName(SystemRole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(SystemRole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-                        roles.add(adminRole);
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(SystemRole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
-                }
-            });
-        }
+        Set<Role> roles = roleService.getRoles(signupRequest.getRoles());
 
         User user = User.builder()
                 .username(signupRequest.getUsername())
