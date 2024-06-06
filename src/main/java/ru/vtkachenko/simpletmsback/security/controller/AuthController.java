@@ -20,6 +20,7 @@ import ru.vtkachenko.simpletmsback.security.dto.response.LoginResponseDto;
 import ru.vtkachenko.simpletmsback.security.jwt.JwtUtils;
 import ru.vtkachenko.simpletmsback.security.model.Role;
 import ru.vtkachenko.simpletmsback.security.model.User;
+import ru.vtkachenko.simpletmsback.security.service.AuthService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/auth")
 @RequiredArgsConstructor
 public class AuthController {
+    private final AuthService authService;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -40,12 +42,7 @@ public class AuthController {
 
     @PostMapping("/signin")
     public LoginResponseDto authenticateUser(@Valid @RequestBody LoginRequestDto loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UserDetailsImpl userDetails = authService.authenticateUser(loginRequest.getUsername(), loginRequest.getPassword());
 
         String jwtToken = jwtUtils.generateJwtToken(userDetails);
 
