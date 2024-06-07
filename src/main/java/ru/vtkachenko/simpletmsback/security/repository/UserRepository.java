@@ -1,4 +1,4 @@
-package ru.vtkachenko.simpletmsback.repository;
+package ru.vtkachenko.simpletmsback.security.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.vtkachenko.simpletmsback.security.model.User;

@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.vtkachenko.simpletmsback.repository.UserRepository;
+import ru.vtkachenko.simpletmsback.security.repository.UserRepository;
 import ru.vtkachenko.simpletmsback.security.UserDetailsImpl;
 import ru.vtkachenko.simpletmsback.security.model.User;
 

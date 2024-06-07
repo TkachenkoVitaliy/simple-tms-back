@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.vtkachenko.simpletmsback.constant.enums.SystemRole;
-import ru.vtkachenko.simpletmsback.repository.RoleRepository;
+import ru.vtkachenko.simpletmsback.security.repository.RoleRepository;
 import ru.vtkachenko.simpletmsback.security.model.Role;
 
 import java.util.Collection;
