@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.vtkachenko.simpletmsback.security.UserDetailsImpl;
+import ru.vtkachenko.simpletmsback.security.model.User;
 
 import java.util.Date;
 
@@ -17,12 +18,19 @@ public class JwtUtils {
     @Value("${tms.token.access.expirationMs}")
     private int jwtExpirationMs;
 
+    @Value("${tms.token.refresh.expirationMs}")
+    private int refreshExpirationMs;
+
     public String generateJwtToken(UserDetailsImpl userPrincipal) {
         return generateTokenFromUsername(userPrincipal.getUsername());
     }
 
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public Date getExpirationFromJwtToken(String token) {
+        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getExpiration();
     }
 
     public boolean validateJwtToken(String authToken) {
@@ -44,6 +52,15 @@ public class JwtUtils {
         return false;
     }
 
+    public String generateRefreshToken(User user) {
+        return Jwts.builder()
+                .setSubject(user.getUsername())
+                .setIssuedAt(new Date((new Date()).getTime() + refreshExpirationMs))
+                .claim("typ", "Refresh")
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
+    }
+
     private String generateTokenFromUsername(String username) {
         return Jwts.builder()
                 .setSubject(username)
@@ -51,4 +68,5 @@ public class JwtUtils {
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
+
 }
