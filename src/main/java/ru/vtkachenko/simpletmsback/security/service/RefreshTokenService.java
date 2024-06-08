@@ -22,10 +22,6 @@ public class RefreshTokenService {
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
 
-    public Optional<RefreshToken> findByToken(String token) {
-        return refreshTokenRepository.findByToken(token);
-    }
-
     @Transactional
     public RefreshToken createRefreshToken(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -39,7 +35,7 @@ public class RefreshTokenService {
         return refreshTokenRepository.save(refreshToken);
     }
 
-    public RefreshToken verifyExpiration(String token) {
+    public RefreshToken verifyToken(String token) {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("Refresh Token not in database"));
         if (refreshToken.getExpiryDate().compareTo(Instant.now()) < 0) {

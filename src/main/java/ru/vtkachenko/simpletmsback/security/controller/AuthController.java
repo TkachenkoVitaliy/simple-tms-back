@@ -5,8 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import ru.vtkachenko.simpletmsback.security.dto.request.TokenRefreshRequestDto;
+import ru.vtkachenko.simpletmsback.security.dto.response.TokenRefreshResponseDto;
+import ru.vtkachenko.simpletmsback.security.model.RefreshToken;
 import ru.vtkachenko.simpletmsback.security.repository.RoleRepository;
 import ru.vtkachenko.simpletmsback.security.repository.UserRepository;
 import ru.vtkachenko.simpletmsback.security.UserDetailsImpl;
@@ -17,6 +21,7 @@ import ru.vtkachenko.simpletmsback.security.jwt.JwtUtils;
 import ru.vtkachenko.simpletmsback.security.model.Role;
 import ru.vtkachenko.simpletmsback.security.model.User;
 import ru.vtkachenko.simpletmsback.security.service.AuthService;
+import ru.vtkachenko.simpletmsback.security.service.RefreshTokenService;
 import ru.vtkachenko.simpletmsback.security.service.RoleService;
 import ru.vtkachenko.simpletmsback.security.service.UserService;
 
@@ -33,6 +38,7 @@ public class AuthController {
     private final AuthService authService;
     private final UserService userService;
     private final RoleService roleService;
+    private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -48,10 +54,12 @@ public class AuthController {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
         return LoginResponseDto.builder()
                 .id(userDetails.getId())
                 .token(jwtToken)
+                .refreshToken(refreshToken.getToken())
                 .username(userDetails.getUsername())
                 .roles(roles)
                 .build();
@@ -74,5 +82,25 @@ public class AuthController {
         User savedUser = userRepository.save(user);
 
         return savedUser.getId().toString();
+    }
+
+    @PostMapping("/refreshToken")
+    public TokenRefreshResponseDto refreshToken(@Valid @RequestBody TokenRefreshRequestDto request) {
+        RefreshToken refreshToken = refreshTokenService.verifyToken(request.getRefreshToken());
+        String accessToken = jwtUtils.generateTokenFromUsername(refreshToken.getUser().getUsername());
+        return TokenRefreshResponseDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(request.getRefreshToken())
+                .build();
+    }
+
+    @PostMapping("/signout")
+    public String logoutUser() {
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        Long userId = userDetails.getId();
+        refreshTokenService.deleteByUserId(userId);
+        return "Logout successful";
     }
 }

@@ -55,16 +55,18 @@ public class JwtUtils {
     public String generateRefreshToken(User user) {
         return Jwts.builder()
                 .setSubject(user.getUsername())
-                .setIssuedAt(new Date((new Date()).getTime() + refreshExpirationMs))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + refreshExpirationMs))
                 .claim("typ", "Refresh")
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
-    private String generateTokenFromUsername(String username) {
+    public String generateTokenFromUsername(String username) {
         return Jwts.builder()
                 .setSubject(username)
-                .setIssuedAt(new Date((new Date()).getTime() + jwtExpirationMs))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
