@@ -24,14 +24,18 @@ public class RefreshTokenService {
 
     @Transactional
     public RefreshToken createRefreshToken(Long userId) {
+        RefreshToken refreshToken;
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Optional<RefreshToken> optionalRefresh = refreshTokenRepository.findByUser(user);
+        refreshToken = optionalRefresh.orElseGet(RefreshToken::new);
+
         String token = jwtUtils.generateRefreshToken(user);
         Date expiration = jwtUtils.getExpirationFromJwtToken(token);
-        RefreshToken refreshToken = RefreshToken.builder()
-                .user(user)
-                .token(token)
-                .expiryDate(expiration.toInstant())
-                .build();
+
+        refreshToken.setUser(user);
+        refreshToken.setToken(token);
+        refreshToken.setExpiryDate(expiration.toInstant());
+
         return refreshTokenRepository.save(refreshToken);
     }
 
