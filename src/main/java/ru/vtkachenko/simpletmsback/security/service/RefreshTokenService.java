@@ -23,7 +23,7 @@ public class RefreshTokenService {
     private final JwtUtils jwtUtils;
 
     @Transactional
-    public RefreshToken createRefreshToken(Long userId) {
+    public RefreshToken createOrUpdateRefreshToken(Long userId) {
         RefreshToken refreshToken;
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         Optional<RefreshToken> optionalRefresh = refreshTokenRepository.findByUser(user);

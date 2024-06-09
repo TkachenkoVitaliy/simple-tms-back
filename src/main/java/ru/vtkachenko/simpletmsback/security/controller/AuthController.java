@@ -54,7 +54,7 @@ public class AuthController {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+        RefreshToken refreshToken = refreshTokenService.createOrUpdateRefreshToken(userDetails.getId());
 
         return LoginResponseDto.builder()
                 .id(userDetails.getId())
