@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.vtkachenko.simpletmsback.security.dto.request.TokenRefreshRequestDto;
+import ru.vtkachenko.simpletmsback.security.dto.response.SignupResponseDto;
 import ru.vtkachenko.simpletmsback.security.dto.response.TokenRefreshResponseDto;
 import ru.vtkachenko.simpletmsback.security.model.RefreshToken;
 import ru.vtkachenko.simpletmsback.security.repository.RoleRepository;
@@ -66,9 +67,11 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public String registerUser(@Valid @RequestBody SignupRequestDto signupRequest) {
+    public SignupResponseDto registerUser(@Valid @RequestBody SignupRequestDto signupRequest) {
         if (userService.isCredentialsAlreadyTaken(signupRequest.getUsername(), signupRequest.getEmail())) {
-            return "ERROR";
+            return SignupResponseDto.builder()
+                    .error("Login or email already taken")
+                    .build();
         }
         Set<Role> roles = roleService.getRoles(signupRequest.getRoles());
 
@@ -81,7 +84,11 @@ public class AuthController {
 
         User savedUser = userRepository.save(user);
 
-        return savedUser.getId().toString();
+        LoginRequestDto loginRequestDto = new LoginRequestDto(savedUser.getUsername(), savedUser.getPassword());
+
+        LoginResponseDto loginResponseDto = authenticateUser(loginRequestDto);
+
+        return new SignupResponseDto(loginResponseDto);
     }
 
     @PostMapping("/refreshToken")
